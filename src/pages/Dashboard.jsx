@@ -2,108 +2,133 @@ import React from 'react';
 import StatCard from '../components/dashboard/StatCard';
 import MilesChart from '../components/dashboard/MilesChart';
 import TempChart from '../components/dashboard/TempChart';
-import { Clock } from 'lucide-react';
-import Card from '../components/common/Card';
-import FailureTimeline from '../components/dashboard/FailureTimeline';
+import { Clock, AlertTriangle, CheckCircle } from 'lucide-react';
 import CarStatus from '../components/dashboard/CarStatus';
+import AIInsights from '../components/dashboard/AIInsights';
+import HealthScoreGauge from '../components/dashboard/HealthScoreGauge';
+import LiveTelemetryBar from '../components/dashboard/LiveTelemetryBar';
 
 export default function Dashboard() {
     return (
-        <div className="space-y-8 max-w-[1600px] mx-auto p-6">
+        <div className="space-y-4 max-w-[1600px] mx-auto p-6 pt-0 pb-20 relative">
+
+            {/* Top Bar Area: Title + Health Gauge */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+                <div>
+                    <h1 className="text-3xl font-bold text-white mb-1">Mission Control</h1>
+                    <p className="text-[var(--text-secondary)]">Real-time vehicle telemetry and agent diagnostics</p>
+                </div>
+                <HealthScoreGauge score={94} />
+            </div>
+
+            {/* Live Telemetry (Moved to top) */}
+            <div className="mb-6">
+                <LiveTelemetryBar />
+            </div>
+
             {/* Row 1: Stat Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    title="Battery"
+                    title="Battery Life"
                     value="45"
                     unit="%"
                     icon="energy"
-                    variant="primary"
+                    color="purple"
                     progress={45}
+                    status="Good"
+                    trendText="Discharge rate normal. Estimated 120km remaining."
                 />
                 <StatCard
-                    title="Economy"
+                    title="Energy Eco"
                     value="12"
                     unit="Km/L"
                     icon="fluid"
-                    color="red"
-                    progress={12 * 8} // Approx scales
+                    color="teal"
+                    progress={65}
+                    status="Good"
+                    trendText="Efficiency +5% vs yesterday. Regenerative braking active."
                 />
                 <StatCard
-                    title="Break fluid"
-                    value="9"
-                    unit="%"
+                    title="Brake Fluid"
+                    value="Low"
+                    unit=""
                     icon="fluid"
-                    color="purple"
-                    progress={9}
+                    color="red"
+                    progress={20}
+                    status="Critical"
+                    trendText="Fluid levels below threshold. Inspect immediately."
                 />
                 <StatCard
                     title="Tire Pressure"
-                    value="25"
-                    unit="%"
+                    value="32"
+                    unit="PSI"
                     icon="tires"
                     color="yellow"
-                    progress={25}
+                    progress={80}
+                    status="Low"
+                    trendText="Front-right tire pressure -2 PSI. Recommended inflation."
                 />
             </div>
 
-            {/* Row 2: Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[360px]">
+            {/* Row 2: AI Insights (New Section) */}
+            <AIInsights />
+
+            {/* Row 3: Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[360px]">
                 <MilesChart />
                 <TempChart />
             </div>
 
-            {/* Row 3: Car & Reminder */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Car Image Card */}
-                <div className="lg:col-span-5 bg-[var(--bg-card)] rounded-[2rem] p-8 flex items-center justify-center relative overflow-hidden h-[400px]">
-                    {/* Background Radial Gradient Effect */}
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-100/50 via-transparent to-transparent"></div>
-                    <img
-                        src="https://pngimg.com/d/jeep_PNG48.png"
-                        alt="Car"
-                        className="w-full max-w-[400px] object-contain drop-shadow-2xl z-10 transition-transform hover:scale-105 duration-500"
-                    />
-                    <div className="absolute bottom-10 inset-x-0 w-32 h-8 bg-black/20 blur-xl mx-auto rounded-full"></div>
+            {/* Row 4: Car & Reminder */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Car Image Card (Interactive 3D) */}
+                <div className="lg:col-span-7 h-[450px]">
+                    <CarStatus />
                 </div>
 
-                {/* Reminder Table */}
-                <div className="lg:col-span-7 bg-[var(--bg-card)] rounded-[2rem] p-8 h-[400px] overflow-hidden flex flex-col">
-                    <h3 className="text-xl font-bold text-[var(--text-primary)] mb-6">Reminder</h3>
+                {/* Reminder Table (Enhanced) */}
+                <div className="lg:col-span-5 bg-[var(--bg-card)] rounded-[2rem] p-8 h-[450px] overflow-hidden flex flex-col relative group hover:border-[var(--color-purple)]/20 border border-transparent transition-all">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-bold text-[var(--text-primary)]">Reminders</h3>
+                        <button className="text-xs px-3 py-1 bg-[var(--bg-primary)] rounded-full hover:bg-[var(--color-purple)] hover:text-white transition-colors">See All</button>
+                    </div>
 
-                    <div className="w-full text-left border-collapse">
-                        <div className="grid grid-cols-5 text-xs text-[var(--text-secondary)] uppercase tracking-wider font-medium mb-4 px-4">
-                            <div className="col-span-2">Description</div>
-                            <div>Due</div>
-                            <div>Overdue</div>
-                            <div>Notify</div>
-                        </div>
+                    <div className="overflow-y-auto pr-2 space-y-3 custom-scrollbar flex-1">
+                        <ReminderRow
+                            description="Check Tyre Pressure"
+                            due="In 2 Days"
+                            tag="Urgent"
+                            tagColor="bg-red-500/10 text-red-400 border-red-500/20"
+                            icon={AlertTriangle}
+                        />
+                        <ReminderRow
+                            description="Software Update v2.4"
+                            due="Tonight 2 AM"
+                            tag="Scheduled"
+                            tagColor="bg-blue-500/10 text-blue-400 border-blue-500/20"
+                            icon={Clock}
+                        />
+                        <ReminderRow
+                            description="Air Filter Replacement"
+                            due="120 Km"
+                            tag="Maintenance"
+                            tagColor="bg-orange-500/10 text-orange-400 border-orange-500/20"
+                            icon={Clock}
+                        />
+                        <ReminderRow
+                            description="Insurance Renewal"
+                            due="15 Days"
+                            tag="Admin"
+                            tagColor="bg-[var(--bg-primary)] text-[var(--text-secondary)] border-[var(--border-color)]"
+                            icon={CheckCircle}
+                        />
+                    </div>
 
-                        <div className="overflow-y-auto pr-2 space-y-2 h-[260px] custom-scrollbar">
-                            <ReminderRow
-                                description="Urgent Tyre Pressure"
-                                due="01/11/2025"
-                                overdue="01/11/2025"
-                                notify="Urgent"
-                                notifyColor="text-red-500"
-                                status="active"
-                            />
-                            <ReminderRow
-                                description="Regular Check-Up"
-                                due="06/11/2025"
-                                overdue="13/11/2025"
-                                notify="Regular"
-                                notifyColor="text-[var(--text-primary)]"
-                                status="pending"
-                            />
-                            <ReminderRow
-                                description="Oil Change"
-                                due="15/11/2025"
-                                overdue="-"
-                                notify="Regular"
-                                notifyColor="text-[var(--text-primary)]"
-                                status="pending"
-                            />
-                        </div>
+                    {/* Bottom Action Area */}
+                    <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
+                        <button className="w-full py-3 rounded-xl bg-[var(--color-purple)] text-white font-bold text-sm shadow-lg shadow-[var(--color-purple)]/20 hover:shadow-[var(--color-purple)]/40 hover:scale-[1.02] transition-all active:scale-95">
+                            Run Diagnostics Check
+                        </button>
                     </div>
                 </div>
             </div>
@@ -111,11 +136,20 @@ export default function Dashboard() {
     );
 }
 
-const ReminderRow = ({ description, due, overdue, notify, notifyColor, status }) => (
-    <div className="grid grid-cols-5 items-center p-4 hover:bg-[var(--bg-primary)] rounded-xl transition-colors text-sm border border-transparent hover:border-[var(--border-color)] group cursor-pointer">
-        <div className="col-span-2 font-medium text-[var(--text-primary)]">{description}</div>
-        <div className="text-[var(--text-secondary)]">{due}</div>
-        <div className="text-[var(--text-secondary)]">{overdue}</div>
-        <div className={`font-medium ${notifyColor}`}>{notify}</div>
+const ReminderRow = ({ description, due, tag, tagColor, icon: Icon }) => (
+    <div className="flex items-center p-4 bg-[var(--bg-primary)]/50 rounded-xl hover:bg-[var(--bg-primary)] transition-colors border border-transparent hover:border-[var(--border-color)] cursor-pointer group/row">
+        <div className={`p-2 rounded-lg mr-4 ${tagColor} bg-opacity-10 border-none`}>
+            <Icon size={18} />
+        </div>
+        <div className="flex-1">
+            <div className="flex justify-between items-start">
+                <div className="font-medium text-[var(--text-primary)] mb-0.5">{description}</div>
+                <div className={`text-[10px] px-2 py-0.5 rounded border ${tagColor} font-medium uppercase tracking-wider`}>{tag}</div>
+            </div>
+            <div className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                <Clock size={10} />
+                {due}
+            </div>
+        </div>
     </div>
 );

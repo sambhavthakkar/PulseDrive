@@ -13,7 +13,7 @@ export default function Layout() {
             <div className="flex flex-col flex-1 min-w-0">
                 <Header />
 
-                <main className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+                <main className="flex-1 overflow-y-auto p-6">
                     <Outlet />
                 </main>
             </div>
