@@ -60,9 +60,9 @@ const Tooltip = ({ text }) => (
         exit={{ opacity: 0, y: 10, scale: 0.9 }}
         className="absolute top-16 left-0 right-0 z-50 mx-4"
     >
-        <div className="bg-black/90 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-2xl text-xs text-gray-300 text-center leading-relaxed">
+        <div className="bg-[var(--bg-secondary)]/95 backdrop-blur-md border border-[var(--border-color)] p-3 rounded-xl shadow-2xl text-xs text-[var(--text-secondary)] text-center leading-relaxed">
             {text}
-            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/90 rotate-45 border-l border-t border-white/10"></div>
+            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[var(--bg-secondary)]/95 rotate-45 border-l border-t border-[var(--border-color)]"></div>
         </div>
     </motion.div>
 );
@@ -189,10 +189,10 @@ export default function StatCard({
                             key={value}
                             initial={{ opacity: 0, scale: 0.5 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="text-3xl font-bold text-white tracking-tight"
+                            className="text-3xl font-bold text-[var(--text-primary)] tracking-tight"
                         >
                             {value}
-                            <span className="text-sm font-medium text-white/50 ml-0.5 align-top opacity-70">{unit}</span>
+                            <span className="text-sm font-medium text-[var(--text-muted)] ml-0.5 align-top opacity-70">{unit}</span>
                         </motion.span>
                     </div>
                 </div>

@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Card from '../components/common/Card';
 import { Mic, Square, Check, X, Clock, Zap, MessageSquare, Star, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Omnidimension Widget Integration
+const VOICE_WIDGET_KEY = 'b046f41bae8c8b327786217827b52446';
+const FEEDBACK_WIDGET_KEY = 'e2279dd59e2b3744e9a4b178df4b8862';
 
 export default function VoiceAgent() {
     // States: 'idle', 'listening', 'processing', 'suggestion'
@@ -68,7 +72,7 @@ export default function VoiceAgent() {
                     {/* Header */}
                     <div className="relative z-10 flex items-center justify-between p-6">
                         <div className="flex items-center gap-4">
-                            <h2 className="text-2xl font-bold text-white tracking-tight">Voice Assistant</h2>
+                            <h2 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">Voice Assistant</h2>
                             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
                                 <span className={`w-2 h-2 rounded-full ${viewState === 'idle' ? 'bg-gray-400' : viewState === 'listening' ? 'bg-[var(--color-purple)]' : 'bg-teal-400'} animate-pulse`}></span>
                                 <span className="text-xs font-medium text-gray-300 uppercase tracking-widest">{stateMessages[viewState]}</span>
@@ -273,7 +277,7 @@ const Orb = ({ state, onToggle }) => {
                     ${isListening ? 'bg-gradient-to-br from-[var(--color-purple)] to-indigo-600 shadow-[0_0_60px_rgba(168,85,247,0.6)] scale-110' :
                         isProcessing ? 'bg-gradient-to-br from-blue-600 to-cyan-500 shadow-[0_0_50px_rgba(37,99,235,0.5)] rotate-180' :
                             isSpeaking ? 'bg-gradient-to-br from-teal-500 to-emerald-500 shadow-[0_0_50px_rgba(20,184,166,0.5)]' :
-                                'bg-gradient-to-br from-gray-800 to-black border border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_40px_rgba(168,85,247,0.25)] group-hover:border-[var(--color-purple)]/50'
+                                'bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-card)] border border-[var(--border-medium)] shadow-[var(--shadow-lg)] group-hover:shadow-[0_0_40px_rgba(168,85,247,0.25)] group-hover:border-[var(--color-purple)]/50'
                     }
                 `}
                 animate={isListening ? { scale: [1, 1.05, 1] } : isProcessing ? { rotate: 360 } : isSpeaking ? { scale: [1, 1.02, 1] } : {}}
@@ -283,7 +287,7 @@ const Orb = ({ state, onToggle }) => {
                 <div className="absolute inset-1 rounded-full border border-white/20 opacity-40"></div>
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/10 to-transparent opacity-30"></div>
 
-                {isActive ? <Square className="fill-white text-white relative z-20" size={28} /> : <Mic size={36} className="text-white translate-y-[1px] relative z-20" />}
+                {isActive ? <Square className="fill-[var(--text-primary)] text-[var(--text-primary)] relative z-20" size={28} /> : <Mic size={36} className="text-[var(--text-primary)] translate-y-[1px] relative z-20" />}
             </motion.div>
         </div>
     );
@@ -293,7 +297,7 @@ const InteractiveButton = ({ icon: Icon, label, color, onClick }) => {
     const styles = {
         green: 'bg-green-500/10 text-green-500 border-green-500/20 hover:bg-green-500/20 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]',
         red: 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20 hover:shadow-[0_0_20px_rgba(239,68,68,0.2)]',
-        gray: 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]',
+        gray: 'bg-[var(--bg-glass)] text-[var(--text-secondary)] border-[var(--border-color)] hover:bg-[var(--bg-glass-hover)] hover:shadow-[var(--shadow-sm)]',
     };
 
     return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import StatCard from '../components/dashboard/StatCard';
 import MilesChart from '../components/dashboard/MilesChart';
 import TempChart from '../components/dashboard/TempChart';
@@ -7,8 +7,25 @@ import CarStatus from '../components/dashboard/CarStatus';
 import AIInsights from '../components/dashboard/AIInsights';
 import HealthScoreGauge from '../components/dashboard/HealthScoreGauge';
 import LiveTelemetryBar from '../components/dashboard/LiveTelemetryBar';
+import { getDashboardStats } from '../services/backendApi';
 
 export default function Dashboard() {
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchStats() {
+            try {
+                const data = await getDashboardStats();
+                setStats(data);
+            } catch (error) {
+                console.error('Failed to fetch dashboard stats:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchStats();
+    }, []);
     return (
         <div className="space-y-4 max-w-[1600px] mx-auto p-6 pt-0 pb-20 relative">
 
@@ -18,7 +35,7 @@ export default function Dashboard() {
                     <h1 className="text-3xl font-bold text-white mb-1">Mission Control</h1>
                     <p className="text-[var(--text-secondary)]">Real-time vehicle telemetry and agent diagnostics</p>
                 </div>
-                <HealthScoreGauge score={94} />
+                <HealthScoreGauge score={stats?.health_score ?? 94} />
             </div>
 
             {/* Live Telemetry (Moved to top) */}
@@ -30,13 +47,13 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Battery Life"
-                    value="45"
+                    value={stats?.battery_level ?? 45}
                     unit="%"
                     icon="energy"
                     color="purple"
-                    progress={45}
-                    status="Good"
-                    trendText="Discharge rate normal. Estimated 120km remaining."
+                    progress={stats?.battery_level ?? 45}
+                    status={stats?.battery_level > 30 ? "Good" : "Low"}
+                    trendText={`Discharge rate normal. Estimated ${stats?.range_km ?? 120}km remaining.`}
                 />
                 <StatCard
                     title="Energy Eco"

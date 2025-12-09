@@ -4,6 +4,7 @@ import AgentPipeline from './AgentPipeline';
 import AgentDrawer from './AgentDrawer';
 import EventLog from './EventLog';
 import { mockBackend } from '../../services/mockAgentBackend';
+import { connectToAgentEvents, triggerWorkflow } from '../../services/backendApi';
 import { Activity } from 'lucide-react';
 
 const INITIAL_PIPELINE = [
@@ -17,49 +18,88 @@ const INITIAL_PIPELINE = [
     { name: 'UEBA Security Agent', status: 'idle', lastLog: 'Active & Monitoring' },
 ];
 
+// Agent name mapping from backend to frontend
+const AGENT_NAME_MAP = {
+    'data_analysis': 'Data Analysis Agent',
+    'diagnosis': 'Diagnosis Agent',
+    'digital_twin': 'Digital Twin Verification',
+    'voice': 'Voice Engagement Agent',
+    'scheduling': 'Scheduling Agent',
+    'manufacturing': 'Manufacturing Insights',
+    'feedback': 'Feedback Agent',
+    'ueba': 'UEBA Security Agent',
+    'System': 'System',
+};
+
 export default function AgentOrchestrator() {
     const [pipeline, setPipeline] = useState(INITIAL_PIPELINE);
     const [logs, setLogs] = useState([]);
     const [activeScenario, setActiveScenario] = useState(null);
     const [selectedAgent, setSelectedAgent] = useState(null);
+    const [useRealBackend, setUseRealBackend] = useState(true);
+
+    // Process incoming event (works for both mock and real backend)
+    const processEvent = (event) => {
+        const agentName = AGENT_NAME_MAP[event.agent] || event.agent;
+
+        // Skip heartbeat events
+        if (event.type === 'heartbeat') return;
+
+        // 1. Add Log
+        const newLog = {
+            id: Date.now() + Math.random(),
+            timestamp: new Date(event.timestamp).toLocaleTimeString('en-US', { hour12: false }),
+            agent: agentName,
+            message: event.message,
+            color: event.status === 'alert' ? 'text-red-400' :
+                event.status === 'running' ? 'text-blue-400' :
+                    event.type === 'system' || agentName === 'System' ? 'text-gray-500' : 'text-green-400'
+        };
+        setLogs(prev => [...prev.slice(-49), newLog]);
+
+        // 2. Update Pipeline Status
+        if (event.type !== 'system' && event.type !== 'connected') {
+            setPipeline(prev => prev.map(step => {
+                if (step.name === agentName) {
+                    return {
+                        ...step,
+                        status: event.status,
+                        lastLog: event.message
+                    };
+                }
+                return step;
+            }));
+        }
+
+        // 3. Handle System Events (Reset/Complete)
+        if (event.status === 'completed' && agentName === 'System') {
+            setActiveScenario(null);
+        }
+    };
 
     useEffect(() => {
-        // Subscribe to Mock Backend (simulating FastAPI SSE)
-        const unsubscribe = mockBackend.subscribe((event) => {
-            // 1. Add Log
-            const newLog = {
-                id: Date.now() + Math.random(),
-                timestamp: new Date(event.timestamp).toLocaleTimeString('en-US', { hour12: false }),
-                agent: event.agent,
-                message: event.message,
-                color: event.status === 'alert' ? 'text-red-400' :
-                    event.status === 'running' ? 'text-blue-400' :
-                        event.agent === 'System' ? 'text-gray-500' : 'text-green-400'
-            };
-            setLogs(prev => [...prev.slice(-49), newLog]);
+        let cleanup = null;
 
-            // 2. Update Pipeline Status
-            if (event.type !== 'system') {
-                setPipeline(prev => prev.map(step => {
-                    if (step.name === event.agent) {
-                        return {
-                            ...step,
-                            status: event.status,
-                            lastLog: event.message
-                        };
-                    }
-                    return step;
-                }));
+        if (useRealBackend) {
+            // Try real WebSocket backend
+            try {
+                cleanup = connectToAgentEvents(processEvent, (error) => {
+                    console.warn('[AgentOrchestrator] WebSocket failed, falling back to mock:', error);
+                    setUseRealBackend(false);
+                });
+            } catch (e) {
+                console.warn('[AgentOrchestrator] WebSocket not available, using mock');
+                setUseRealBackend(false);
             }
+        } else {
+            // Fallback to mock backend
+            cleanup = mockBackend.subscribe(processEvent);
+        }
 
-            // 3. Handle System Events (Reset/Complete)
-            if (event.status === 'completed' && event.agent === 'System') {
-                setActiveScenario(null);
-            }
-        });
-
-        return () => unsubscribe();
-    }, []);
+        return () => {
+            if (cleanup) cleanup();
+        };
+    }, [useRealBackend]);
 
     const handleStartScenario = async (id) => {
         setActiveScenario(id);
@@ -69,7 +109,17 @@ export default function AgentOrchestrator() {
         // Mark UEBA as running/monitoring always
         setPipeline(prev => prev.map(p => p.name === 'UEBA Security Agent' ? { ...p, status: 'idle', lastLog: 'Monitoring...' } : p));
 
-        await mockBackend.startWorkflow(id);
+        if (useRealBackend) {
+            // Trigger real backend workflow
+            try {
+                await triggerWorkflow(id);
+            } catch (e) {
+                console.error('Failed to trigger workflow, falling back to mock');
+                await mockBackend.startWorkflow(id);
+            }
+        } else {
+            await mockBackend.startWorkflow(id);
+        }
     };
 
     return (

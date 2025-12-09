@@ -27,7 +27,8 @@ export default function DataAnalysis() {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Data Analysis Agent</h2>
+            <h2 className="text-2xl font-bold text-[var(--text-primary)]">Data Analysis Agent</h2>
+            {/* <!-- DATA_ANALYSIS_WIDGET --> */}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Live Telemetry Feed */}
@@ -106,8 +107,8 @@ export default function DataAnalysis() {
                                     </td>
                                     <td className="py-3">
                                         <span className={`px-2 py-1 rounded text-xs ${row.status === 'Active' ? 'bg-red-500/10 text-red-500' :
-                                                row.status === 'Monitoring' ? 'bg-yellow-500/10 text-yellow-500' :
-                                                    'bg-green-500/10 text-green-500'
+                                            row.status === 'Monitoring' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                'bg-green-500/10 text-green-500'
                                             }`}>
                                             {row.status}
                                         </span>

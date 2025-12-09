@@ -24,7 +24,7 @@ export default function Feedback() {
 
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-white">Service Feedback</h2>
+            <h2 className="text-2xl font-bold text-[var(--text-primary)]">Service Feedback</h2>
 
             {/* Main Feedback Form */}
             <Card className="min-h-[400px] flex items-center justify-center p-8 lg:p-16">

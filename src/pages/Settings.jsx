@@ -27,17 +27,19 @@ export default function Settings() {
                                 <div className="text-sm text-[var(--text-secondary)]">Adjust system appearance</div>
                             </div>
                         </div>
-                        <div className="bg-[var(--bg-primary)] p-1 rounded-full flex gap-1 border border-[var(--border-color)]">
+                        <div className="bg-[var(--bg-glass)] backdrop-blur p-1 rounded-full flex gap-1 border border-[var(--border-color)]">
                             <button
                                 onClick={() => setTheme('light')}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${theme === 'light' ? 'bg-white text-black shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${theme === 'light' ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                             >
+                                <Sun size={14} />
                                 Light
                             </button>
                             <button
                                 onClick={() => setTheme('dark')}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${theme === 'dark' ? 'bg-[var(--color-purple)] text-white shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${theme === 'dark' ? 'bg-[var(--color-purple)] text-[var(--text-inverted)] shadow-md shadow-[var(--color-purple)]/20' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                             >
+                                <Moon size={14} />
                                 Dark
                             </button>
                         </div>
@@ -47,7 +49,7 @@ export default function Settings() {
 
             <Card title="Voice Agent Configuration">
                 <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                    <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-6">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
                                 <Globe size={20} />
@@ -140,7 +142,7 @@ const ToggleItem = ({ icon: Icon, label, defaultChecked, color }) => {
                 className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 relative ${checked ? 'bg-[var(--color-purple)]' : 'bg-[var(--bg-primary)] border border-[var(--border-color)]'}`}
             >
                 <motion.div
-                    className="w-4 h-4 rounded-full bg-white shadow-sm"
+                    className="w-4 h-4 rounded-full bg-[var(--text-inverted)] shadow-sm"
                     animate={{ x: checked ? 24 : 0 }}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />

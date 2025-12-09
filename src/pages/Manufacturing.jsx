@@ -14,7 +14,8 @@ const DEFECT_DATA = [
 export default function Manufacturing() {
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Manufacturing Insights</h2>
+            <h2 className="text-2xl font-bold text-[var(--text-primary)]">Manufacturing Insights</h2>
+            {/* <!-- MANUFACTURING_WIDGET --> */}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Heatmap Section */}
@@ -72,8 +73,8 @@ export default function Manufacturing() {
                                     <item.icon size={24} />
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${item.impact === 'Critical' ? 'bg-red-500/10 text-red-500' :
-                                        item.impact === 'High' ? 'bg-orange-500/10 text-orange-500' :
-                                            'bg-blue-500/10 text-blue-500'
+                                    item.impact === 'High' ? 'bg-orange-500/10 text-orange-500' :
+                                        'bg-blue-500/10 text-blue-500'
                                     }`}>
                                     {item.impact} Impact
                                 </span>

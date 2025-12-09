@@ -6,7 +6,7 @@ import { AlertCircle, Zap, Activity, CheckCircle, Info, Sparkles } from 'lucide-
 export default function Diagnosis() {
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">System Diagnostics</h2>
+            <h2 className="text-2xl font-bold text-[var(--text-primary)]">System Diagnostics</h2>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Failure Probability List */}
