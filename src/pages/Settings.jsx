@@ -109,7 +109,7 @@ export default function Settings() {
 
                 <Card title="Privacy & Security">
                     <div className="space-y-4">
-                        <ToggleItem icon={Shield} label="Share Telemetry Data" defaultChecked={true} color="green" />
+                        <ToggleItem icon={Shield} label="Telemetry Data" defaultChecked={true} color="green" />
                         <ToggleItem icon={UserCheck} label="Biometric Auth" defaultChecked={true} color="purple" />
                     </div>
                 </Card>
@@ -139,10 +139,10 @@ const ToggleItem = ({ icon: Icon, label, defaultChecked, color }) => {
             </div>
             <button
                 onClick={() => setChecked(!checked)}
-                className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 relative ${checked ? 'bg-[var(--color-purple)]' : 'bg-[var(--bg-primary)] border border-[var(--border-color)]'}`}
+                className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 relative ${checked ? 'bg-[var(--color-primary)]' : 'bg-[var(--bg-elevated)] border border-[var(--border-default)]'}`}
             >
                 <motion.div
-                    className="w-4 h-4 rounded-full bg-[var(--text-inverted)] shadow-sm"
+                    className="w-4 h-4 rounded-full bg-white shadow-sm"
                     animate={{ x: checked ? 24 : 0 }}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />

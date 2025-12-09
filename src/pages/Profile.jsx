@@ -101,7 +101,7 @@ export default function Profile() {
                             <Calendar size={20} className="text-[var(--color-info)]" />
                         </div>
                     </div>
-                    <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-1">December 20, 2024</h4>
+                    <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-1">December 20, 2025</h4>
                     <p className="text-[var(--text-secondary)] mb-4">Annual Inspection & System Check</p>
                     <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
                         <div>
