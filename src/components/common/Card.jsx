@@ -1,16 +1,24 @@
 import React from 'react';
-import { cn } from '../../utils/cn';
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
-export default function Card({ title, children, className, actionItem }) {
+export function cn(...inputs) {
+    return twMerge(clsx(inputs));
+}
+
+export default function Card({ title, subtitle, children, className, actionItem, noPadding = false }) {
     return (
-        <div className={cn("bg-[var(--bg-card)] rounded-2xl p-6 flex flex-col h-full shadow-sm transition-colors border border-[var(--border-color)]", className)}>
-            {title && (
-                <div className="flex items-center justify-between mb-6 shrink-0">
-                    <h3 className="text-xl font-bold text-[var(--text-primary)]">{title}</h3>
+        <div className={cn("card-base flex flex-col h-full", !noPadding && "p-6", className)}>
+            {(title || actionItem) && (
+                <div className={cn("flex items-center justify-between shrink-0 mb-6", noPadding && "p-6 pb-0")}>
+                    <div className="flex flex-col gap-1">
+                        {title && <h3 className="h3 text-[var(--text-primary)]">{title}</h3>}
+                        {subtitle && <p className="body-reg text-[var(--text-muted)]">{subtitle}</p>}
+                    </div>
                     {actionItem && <div>{actionItem}</div>}
                 </div>
             )}
-            <div className="flex-1 min-h-0 relative">
+            <div className={cn("flex-1 min-h-0 relative", noPadding && "p-0")}>
                 {children}
             </div>
         </div>

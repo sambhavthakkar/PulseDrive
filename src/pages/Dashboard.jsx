@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import StatCard from '../components/dashboard/StatCard';
 import MilesChart from '../components/dashboard/MilesChart';
 import TempChart from '../components/dashboard/TempChart';
-import { Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Clock, AlertTriangle, CheckCircle, Activity } from 'lucide-react';
 import CarStatus from '../components/dashboard/CarStatus';
 import AIInsights from '../components/dashboard/AIInsights';
 import HealthScoreGauge from '../components/dashboard/HealthScoreGauge';
 import LiveTelemetryBar from '../components/dashboard/LiveTelemetryBar';
+import Card from '../components/common/Card';
+import Button from '../components/common/Button';
+import Badge from '../components/common/Badge';
 import { getDashboardStats } from '../services/backendApi';
 
 export default function Dashboard() {
@@ -26,22 +29,20 @@ export default function Dashboard() {
         }
         fetchStats();
     }, []);
-    return (
-        <div className="space-y-4 max-w-[1600px] mx-auto p-6 pt-0 pb-20 relative">
 
-            {/* Top Bar Area: Title + Health Gauge */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+    return (
+        <div className="space-y-6 pb-20">
+            {/* Top Bar: Title + Health */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-1">Mission Control</h1>
-                    <p className="text-[var(--text-secondary)]">Real-time vehicle telemetry and agent diagnostics</p>
+                    <h1 className="h1 text-[var(--text-primary)] mb-1">Mission Control</h1>
+                    <p className="body-reg text-[var(--text-secondary)]">Real-time vehicle telemetry and agent diagnostics</p>
                 </div>
                 <HealthScoreGauge score={stats?.health_score ?? 94} />
             </div>
 
-            {/* Live Telemetry (Moved to top) */}
-            <div className="mb-6">
-                <LiveTelemetryBar />
-            </div>
+            {/* Live Telemetry */}
+            <LiveTelemetryBar />
 
             {/* Row 1: Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -60,7 +61,7 @@ export default function Dashboard() {
                     value="12"
                     unit="Km/L"
                     icon="fluid"
-                    color="teal"
+                    color="teal" // mapped to info/teal
                     progress={65}
                     status="Good"
                     trendText="Efficiency +5% vs yesterday. Regenerative braking active."
@@ -87,84 +88,90 @@ export default function Dashboard() {
                 />
             </div>
 
-            {/* Row 2: AI Insights (New Section) */}
+            {/* Row 2: AI Insights */}
             <AIInsights />
 
             {/* Row 3: Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[360px]">
-                <MilesChart />
-                <TempChart />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
+                <Card noPadding className="overflow-hidden">
+                    <MilesChart />
+                </Card>
+                <Card noPadding className="overflow-hidden">
+                    <TempChart />
+                </Card>
             </div>
 
-            {/* Row 4: Car & Reminder */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Car Image Card (Interactive 3D) */}
-                <div className="lg:col-span-7 h-[450px]">
+            {/* Row 4: Car & Reminders */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Car Image Card */}
+                <div className="lg:col-span-7 h-[500px]">
                     <CarStatus />
                 </div>
 
-                {/* Reminder Table (Enhanced) */}
-                <div className="lg:col-span-5 bg-[var(--bg-card)] rounded-[2rem] p-8 h-[450px] overflow-hidden flex flex-col relative group hover:border-[var(--color-purple)]/20 border border-transparent transition-all">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-bold text-[var(--text-primary)]">Reminders</h3>
-                        <button className="text-xs px-3 py-1 bg-[var(--bg-primary)] rounded-full hover:bg-[var(--color-purple)] hover:text-white transition-colors">See All</button>
-                    </div>
+                {/* Reminder Table */}
+                <div className="lg:col-span-5 h-[500px]">
+                    <Card
+                        title="Reminders"
+                        actionItem={<Button size="sm" variant="ghost">See All</Button>}
+                        className="h-full flex flex-col"
+                        noPadding
+                    >
+                        <div className="flex-1 flex flex-col gap-3 overflow-y-auto px-6 pb-4 pt-2 custom-scrollbar">
+                            <ReminderRow
+                                description="Check Tyre Pressure"
+                                due="In 2 Days"
+                                badge={<Badge variant="error" className="bg-[var(--color-error)]/10 text-[var(--color-error)]">Urgent</Badge>}
+                                icon={AlertTriangle}
+                                iconColor="text-[var(--color-error)]"
+                            />
+                            <ReminderRow
+                                description="Software Update v2.4"
+                                due="Tonight 2 AM"
+                                badge={<Badge variant="info" className="bg-[var(--color-info)]/10 text-[var(--color-info)]">Scheduled</Badge>}
+                                icon={Clock}
+                                iconColor="text-[var(--color-info)]"
+                            />
+                            <ReminderRow
+                                description="Air Filter Replacement"
+                                due="120 Km"
+                                badge={<Badge variant="warning" className="bg-[var(--color-warning)]/10 text-[var(--color-warning)]">Maintenence</Badge>}
+                                icon={Activity}
+                                iconColor="text-[var(--color-warning)]"
+                            />
+                            <ReminderRow
+                                description="Insurance Renewal"
+                                due="15 Days"
+                                badge={<Badge variant="default">Admin</Badge>}
+                                icon={CheckCircle}
+                                iconColor="text-[var(--color-success)]"
+                            />
+                        </div>
 
-                    <div className="overflow-y-auto pr-2 space-y-3 custom-scrollbar flex-1">
-                        <ReminderRow
-                            description="Check Tyre Pressure"
-                            due="In 2 Days"
-                            tag="Urgent"
-                            tagColor="bg-red-500/10 text-red-400 border-red-500/20"
-                            icon={AlertTriangle}
-                        />
-                        <ReminderRow
-                            description="Software Update v2.4"
-                            due="Tonight 2 AM"
-                            tag="Scheduled"
-                            tagColor="bg-blue-500/10 text-blue-400 border-blue-500/20"
-                            icon={Clock}
-                        />
-                        <ReminderRow
-                            description="Air Filter Replacement"
-                            due="120 Km"
-                            tag="Maintenance"
-                            tagColor="bg-orange-500/10 text-orange-400 border-orange-500/20"
-                            icon={Clock}
-                        />
-                        <ReminderRow
-                            description="Insurance Renewal"
-                            due="15 Days"
-                            tag="Admin"
-                            tagColor="bg-[var(--bg-primary)] text-[var(--text-secondary)] border-[var(--border-color)]"
-                            icon={CheckCircle}
-                        />
-                    </div>
-
-                    {/* Bottom Action Area */}
-                    <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
-                        <button className="w-full py-3 rounded-xl bg-[var(--color-purple)] text-white font-bold text-sm shadow-lg shadow-[var(--color-purple)]/20 hover:shadow-[var(--color-purple)]/40 hover:scale-[1.02] transition-all active:scale-95">
-                            Run Diagnostics Check
-                        </button>
-                    </div>
+                        {/* Bottom Action */}
+                        <div className="p-6 border-t border-[var(--border-subtle)] mt-auto">
+                            <Button className="w-full" variant="primary" leftIcon={<Activity size={18} />}>
+                                Run Diagnostics Check
+                            </Button>
+                        </div>
+                    </Card>
                 </div>
             </div>
         </div>
     );
 }
 
-const ReminderRow = ({ description, due, tag, tagColor, icon: Icon }) => (
-    <div className="flex items-center p-4 bg-[var(--bg-primary)]/50 rounded-xl hover:bg-[var(--bg-primary)] transition-colors border border-transparent hover:border-[var(--border-color)] cursor-pointer group/row">
-        <div className={`p-2 rounded-lg mr-4 ${tagColor} bg-opacity-10 border-none`}>
+const ReminderRow = ({ description, due, badge, icon: Icon, iconColor }) => (
+    <div className="flex items-center p-3 rounded-[var(--radius-button)] hover:bg-[var(--bg-elevated)] transition-colors border border-transparent hover:border-[var(--border-subtle)] cursor-pointer group">
+        <div className={`p-2 rounded-lg mr-3 bg-[var(--bg-elevated)] ${iconColor}`}>
             <Icon size={18} />
         </div>
         <div className="flex-1">
             <div className="flex justify-between items-start">
                 <div className="font-medium text-[var(--text-primary)] mb-0.5">{description}</div>
-                <div className={`text-[10px] px-2 py-0.5 rounded border ${tagColor} font-medium uppercase tracking-wider`}>{tag}</div>
+                {badge}
             </div>
             <div className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
-                <Clock size={10} />
+                <Clock size={12} />
                 {due}
             </div>
         </div>

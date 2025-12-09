@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Card from '../components/common/Card';
-import { Mic, Square, Check, X, Clock, Zap, MessageSquare, Star, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
+import Button from '../components/common/Button';
+import Badge from '../components/common/Badge';
+import { Mic, Square, Check, X, Clock, Zap, Star, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// Omnidimension Widget Integration
-const VOICE_WIDGET_KEY = 'b046f41bae8c8b327786217827b52446';
-const FEEDBACK_WIDGET_KEY = 'e2279dd59e2b3744e9a4b178df4b8862';
+import { cn } from '../utils/cn';
 
 export default function VoiceAgent() {
     // States: 'idle', 'listening', 'processing', 'suggestion'
@@ -61,21 +60,25 @@ export default function VoiceAgent() {
     };
 
     return (
-        <div className="h-[calc(100vh-140px)] flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mx-auto">
 
             {/* LEFT: VOICE ASSISTANT AGENT */}
-            <div className="flex-[1.5] flex flex-col gap-6">
-                <Card className="h-full flex flex-col relative overflow-hidden border-[var(--color-primary)]/20 shadow-2xl">
+            <div className="lg:col-span-8 flex flex-col gap-6">
+                <Card noPadding className="min-h-[600px] flex flex-col relative overflow-hidden border-[var(--color-primary)]/20 shadow-2xl bg-[var(--bg-card)]">
                     {/* Background Grid */}
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 pointer-events-none"></div>
 
                     {/* Header */}
                     <div className="relative z-10 flex items-center justify-between p-6">
                         <div className="flex items-center gap-4">
-                            <h2 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">Voice Assistant</h2>
-                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                                <span className={`w-2 h-2 rounded-full ${viewState === 'idle' ? 'bg-gray-400' : viewState === 'listening' ? 'bg-[var(--color-purple)]' : 'bg-teal-400'} animate-pulse`}></span>
-                                <span className="text-xs font-medium text-gray-300 uppercase tracking-widest">{stateMessages[viewState]}</span>
+                            <h2 className="h2 text-[var(--text-primary)] tracking-tight">Voice Assistant</h2>
+                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
+                                <span className={cn(
+                                    "w-2 h-2 rounded-full animate-pulse",
+                                    viewState === 'idle' ? 'bg-[var(--text-muted)]' :
+                                        viewState === 'listening' ? 'bg-[var(--color-primary)]' : 'bg-teal-400'
+                                )}></span>
+                                <span className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-widest">{stateMessages[viewState]}</span>
                             </div>
                         </div>
                     </div>
@@ -96,9 +99,9 @@ export default function VoiceAgent() {
                                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                                         className="flex justify-center gap-1.5"
                                     >
-                                        <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                                        <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                                        <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></span>
+                                        <span className="w-2 h-2 bg-[var(--text-muted)] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                        <span className="w-2 h-2 bg-[var(--text-muted)] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                        <span className="w-2 h-2 bg-[var(--text-muted)] rounded-full animate-bounce"></span>
                                     </motion.div>
                                 ) : (
                                     <div className="flex flex-col gap-4">
@@ -108,13 +111,18 @@ export default function VoiceAgent() {
                                                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                                                 className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                                             >
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'ai' ? 'bg-[var(--color-purple)]' : 'bg-gray-700'}`}>
-                                                    {msg.role === 'ai' ? <Zap size={14} className="text-white fill-white" /> : <span className="text-xs font-bold text-white">YOU</span>}
+                                                <div className={cn(
+                                                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                                                    msg.role === 'ai' ? 'bg-[var(--color-primary)]' : 'bg-[var(--bg-elevated)]'
+                                                )}>
+                                                    {msg.role === 'ai' ? <Zap size={14} className="text-white fill-white" /> : <span className="text-xs font-bold text-[var(--text-primary)]">YOU</span>}
                                                 </div>
-                                                <div className={`px-5 py-3 rounded-2xl text-sm leading-relaxed max-w-[85%] shadow-lg ${msg.role === 'user'
-                                                    ? 'bg-[var(--color-primary)] text-white rounded-tr-none'
-                                                    : 'bg-white/5 text-gray-100 border border-white/5 rounded-tl-none'
-                                                    }`}>
+                                                <div className={cn(
+                                                    "px-5 py-3 rounded-2xl text-sm leading-relaxed max-w-[85%] shadow-lg",
+                                                    msg.role === 'user'
+                                                        ? 'bg-[var(--color-primary)] text-white rounded-tr-none'
+                                                        : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-tl-none'
+                                                )}>
                                                     {msg.text}
                                                 </div>
                                             </motion.div>
@@ -129,11 +137,11 @@ export default function VoiceAgent() {
                     <div className="relative z-10 p-6 bg-gradient-to-t from-[var(--bg-card)] to-transparent">
                         <div className="flex flex-col items-center gap-4">
                             <div className="flex gap-4">
-                                <InteractiveButton icon={Check} label="Confirm" color="green" onClick={() => handleAction('confirm')} />
-                                <InteractiveButton icon={X} label="Decline" color="red" onClick={() => handleAction('decline')} />
-                                <InteractiveButton icon={Clock} label="Later" color="gray" onClick={() => handleAction('later')} />
+                                <Button variant="success" icon={Check} onClick={() => handleAction('confirm')}>Confirm</Button>
+                                <Button variant="danger" icon={X} onClick={() => handleAction('decline')}>Decline</Button>
+                                <Button variant="ghost" icon={Clock} onClick={() => handleAction('later')}>Later</Button>
                             </div>
-                            <p className="text-xs text-center text-gray-500 font-medium">
+                            <p className="text-xs text-center text-[var(--text-muted)] font-medium">
                                 Next: Scheduling Agent will propose time slots if you confirm.
                             </p>
                         </div>
@@ -142,16 +150,22 @@ export default function VoiceAgent() {
             </div>
 
             {/* RIGHT: FEEDBACK AGENT */}
-            <div className={`flex-1 transition-all duration-700 ${feedbackActive ? 'opacity-100 translate-x-0 grayscale-0' : 'opacity-60 translate-x-0 grayscale filter'}`}>
-                <Card className={`h-full flex flex-col border-[var(--color-primary)]/20 shadow-xl relative overflow-hidden ${feedbackActive ? 'ring-1 ring-[var(--color-purple)]/50' : ''}`}>
+            <div className={cn(
+                "lg:col-span-4 transition-all duration-700",
+                feedbackActive ? 'opacity-100 translate-x-0 grayscale-0' : 'opacity-60 translate-x-0 grayscale filter'
+            )}>
+                <Card noPadding className={cn(
+                    "h-fit flex flex-col border-[var(--color-primary)]/20 shadow-xl relative overflow-hidden bg-[var(--bg-card)]",
+                    feedbackActive && 'ring-1 ring-[var(--color-primary)]/50'
+                )}>
 
                     {/* Header */}
-                    <div className="p-6 border-b border-white/5">
-                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                            <Star className={`fill-[var(--color-purple)] text-[var(--color-purple)]`} size={20} />
+                    <div className="p-6 border-b border-[var(--border-subtle)]">
+                        <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
+                            <Star className="fill-[var(--color-primary)] text-[var(--color-primary)]" size={20} />
                             Feedback Agent
                         </h2>
-                        <p className="text-xs text-gray-400 mt-1">Capture service experience to improve future recommendations.</p>
+                        <p className="text-xs text-[var(--text-secondary)] mt-1">Capture service experience to improve future recommendations.</p>
                     </div>
 
                     {/* Content */}
@@ -159,7 +173,7 @@ export default function VoiceAgent() {
 
                         {/* 1. Rating */}
                         <div className="space-y-3">
-                            <label className="text-sm font-medium text-gray-300">Overall Experience</label>
+                            <label className="text-sm font-medium text-[var(--text-primary)]">Overall Experience</label>
                             <div className="flex gap-2">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <button
@@ -169,7 +183,10 @@ export default function VoiceAgent() {
                                     >
                                         <Star
                                             size={32}
-                                            className={`${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'} transition-colors duration-300`}
+                                            className={cn(
+                                                "transition-colors duration-300",
+                                                star <= rating ? 'fill-[var(--color-warning)] text-[var(--color-warning)]' : 'text-[var(--text-muted)]'
+                                            )}
                                         />
                                     </button>
                                 ))}
@@ -178,7 +195,7 @@ export default function VoiceAgent() {
 
                         {/* 2. Tags */}
                         <div className="space-y-3">
-                            <label className="text-sm font-medium text-gray-300">Quick Tags</label>
+                            <label className="text-sm font-medium text-[var(--text-primary)]">Quick Tags</label>
                             <div className="flex flex-wrap gap-2">
                                 {['Service Quality', 'Wait Time', 'Cost Transparency', 'Staff Behavior', 'App Experience'].map(tag => {
                                     const isSelected = selectedTags.includes(tag);
@@ -186,10 +203,12 @@ export default function VoiceAgent() {
                                         <button
                                             key={tag}
                                             onClick={() => toggleTag(tag)}
-                                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-300 ${isSelected
-                                                ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
-                                                : 'border-white/10 hover:bg-white/5 text-gray-400'
-                                                }`}
+                                            className={cn(
+                                                "px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-300",
+                                                isSelected
+                                                    ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                                                    : 'border-[var(--border-subtle)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
+                                            )}
                                         >
                                             {tag}
                                         </button>
@@ -199,18 +218,18 @@ export default function VoiceAgent() {
                         </div>
 
                         {/* 3. AI Sentiment Analysis */}
-                        <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+                        <div className="bg-[var(--bg-elevated)] rounded-xl p-4 border border-[var(--border-subtle)]">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-bold text-gray-400 uppercase">AI Interpretation</span>
+                                <span className="text-xs font-bold text-[var(--text-muted)] uppercase">AI Interpretation</span>
                                 {rating > 0 ? (
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${rating >= 4 ? 'bg-green-500/20 text-green-400' : rating >= 3 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>
+                                    <Badge variant={rating >= 4 ? 'success' : rating >= 3 ? 'warning' : 'error'} className="text-[10px]">
                                         {rating >= 4 ? 'Positive' : rating >= 3 ? 'Neutral' : 'Critical'}
-                                    </span>
+                                    </Badge>
                                 ) : (
-                                    <span className="text-[10px] text-gray-600 italic">Waiting for input...</span>
+                                    <span className="text-[10px] text-[var(--text-muted)] italic">Waiting for input...</span>
                                 )}
                             </div>
-                            <p className="text-sm text-gray-300 leading-relaxed">
+                            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                                 {rating === 0
                                     ? "Awaiting user feedback..."
                                     : rating >= 4
@@ -222,20 +241,21 @@ export default function VoiceAgent() {
                     </div>
 
                     {/* Footer */}
-                    <div className="p-6 border-t border-white/5 bg-black/20">
-                        <button
-                            className="w-full py-3 rounded-xl bg-[var(--color-primary)] text-white font-bold text-sm hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[var(--color-primary)]/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    <div className="p-6 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated)]/30">
+                        <Button
+                            variant="primary"
+                            className="w-full justify-center"
                             onClick={() => {
                                 setFeedbackActive(false);
                                 setRating(0);
                                 setSelectedTags([]);
                             }}
                             disabled={rating === 0}
+                            icon={Send}
                         >
-                            <Send size={16} />
                             Submit Feedback
-                        </button>
-                        <div className="mt-4 flex items-center justify-between text-[10px] text-gray-500">
+                        </Button>
+                        <div className="mt-4 flex items-center justify-between text-[10px] text-[var(--text-muted)]">
                             <span>Last Service: 14 days ago</span>
                             <span>Stored in history</span>
                         </div>
@@ -260,8 +280,8 @@ const Orb = ({ state, onToggle }) => {
             {/* Listening Ripples */}
             {isListening && (
                 <>
-                    <motion.div animate={{ scale: [1, 1.8], opacity: [0.5, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute inset-0 rounded-full border border-[var(--color-purple)]" />
-                    <motion.div animate={{ scale: [1, 2.2], opacity: [0.3, 0] }} transition={{ repeat: Infinity, duration: 2, delay: 0.3 }} className="absolute inset-0 rounded-full border border-[var(--color-purple)]" />
+                    <motion.div animate={{ scale: [1, 1.8], opacity: [0.5, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute inset-0 rounded-full border border-[var(--color-primary)]" />
+                    <motion.div animate={{ scale: [1, 2.2], opacity: [0.3, 0] }} transition={{ repeat: Infinity, duration: 2, delay: 0.3 }} className="absolute inset-0 rounded-full border border-[var(--color-primary)]" />
                 </>
             )}
             {/* Speaking Ripples (Teal) */}
@@ -273,13 +293,13 @@ const Orb = ({ state, onToggle }) => {
 
             {/* Core Orb */}
             <motion.div
-                className={`relative w-28 h-28 rounded-full flex items-center justify-center transition-all duration-700 z-10
-                    ${isListening ? 'bg-gradient-to-br from-[var(--color-purple)] to-indigo-600 shadow-[0_0_60px_rgba(168,85,247,0.6)] scale-110' :
+                className={cn(
+                    "relative w-28 h-28 rounded-full flex items-center justify-center transition-all duration-700 z-10",
+                    isListening ? 'bg-gradient-to-br from-[var(--color-primary)] to-indigo-600 shadow-[0_0_60px_rgba(var(--color-brand-primary-rgb),0.6)] scale-110' :
                         isProcessing ? 'bg-gradient-to-br from-blue-600 to-cyan-500 shadow-[0_0_50px_rgba(37,99,235,0.5)] rotate-180' :
                             isSpeaking ? 'bg-gradient-to-br from-teal-500 to-emerald-500 shadow-[0_0_50px_rgba(20,184,166,0.5)]' :
-                                'bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-card)] border border-[var(--border-medium)] shadow-[var(--shadow-lg)] group-hover:shadow-[0_0_40px_rgba(168,85,247,0.25)] group-hover:border-[var(--color-purple)]/50'
-                    }
-                `}
+                                'bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-card)] border border-[var(--border-medium)] shadow-[var(--shadow-lg)] group-hover:shadow-[0_0_40px_rgba(var(--color-brand-primary-rgb),0.25)] group-hover:border-[var(--color-primary)]/50'
+                )}
                 animate={isListening ? { scale: [1, 1.05, 1] } : isProcessing ? { rotate: 360 } : isSpeaking ? { scale: [1, 1.02, 1] } : {}}
                 transition={isListening ? { repeat: Infinity, duration: 1.5 } : { repeat: Infinity, duration: 1, ease: "linear" }}
             >
@@ -290,25 +310,5 @@ const Orb = ({ state, onToggle }) => {
                 {isActive ? <Square className="fill-[var(--text-primary)] text-[var(--text-primary)] relative z-20" size={28} /> : <Mic size={36} className="text-[var(--text-primary)] translate-y-[1px] relative z-20" />}
             </motion.div>
         </div>
-    );
-};
-
-const InteractiveButton = ({ icon: Icon, label, color, onClick }) => {
-    const styles = {
-        green: 'bg-green-500/10 text-green-500 border-green-500/20 hover:bg-green-500/20 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]',
-        red: 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20 hover:shadow-[0_0_20px_rgba(239,68,68,0.2)]',
-        gray: 'bg-[var(--bg-glass)] text-[var(--text-secondary)] border-[var(--border-color)] hover:bg-[var(--bg-glass-hover)] hover:shadow-[var(--shadow-sm)]',
-    };
-
-    return (
-        <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onClick}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl border font-bold transition-all duration-300 ${styles[color]}`}
-        >
-            <Icon size={18} />
-            {label}
-        </motion.button>
     );
 };

@@ -14,9 +14,9 @@ const data = [
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-3 rounded-xl shadow-xl backdrop-blur-md">
+            <div className="bg-[var(--bg-elevated)] border border-[var(--border-subtle)] p-3 rounded-xl shadow-xl backdrop-blur-md">
                 <p className="text-[var(--text-secondary)] text-xs mb-1">{label}</p>
-                <p className="text-[var(--color-accent-blue)] font-bold text-lg">
+                <p className="text-[var(--color-primary)] font-bold text-lg">
                     {payload[0].value} <span className="text-xs text-[var(--text-muted)] font-normal">Km</span>
                 </p>
             </div>
@@ -27,35 +27,35 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function MilesChart() {
     return (
-        <div className="h-full bg-[var(--bg-card)] rounded-[2rem] p-6 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-            {/* Background Grid Pattern for Tech Vibe */}
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5"></div>
+        <div className="h-full w-full p-6 flex flex-col relative overflow-hidden">
+            {/* Background Grid Pattern - lighter opacity */}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none"></div>
 
-            <div className="flex flex-col mb-8 relative z-10">
+            <div className="flex flex-col mb-6 relative z-10">
                 <div className="flex items-center gap-2 mb-4">
-                    <h3 className="text-xl font-bold text-[var(--text-primary)]">Range <span className="font-normal text-[var(--text-secondary)]">Statistics</span></h3>
+                    <h3 className="h3 text-[var(--text-primary)]">Range <span className="font-normal text-[var(--text-secondary)]">Statistics</span></h3>
                 </div>
 
                 <div className="flex gap-2">
-                    <button className="bg-[var(--color-accent-blue)] text-white px-4 py-1.5 rounded-full text-sm font-medium shadow-sm transition-all hover:opacity-90">Day</button>
-                    <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-4 py-1.5 text-sm font-medium transition-colors">Week</button>
-                    <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-4 py-1.5 text-sm font-medium transition-colors">Month</button>
-                    <div className="ml-auto text-sm font-bold text-[var(--text-primary)] self-center">256 Km</div>
+                    <button className="bg-[var(--color-primary)] text-white px-4 py-1.5 rounded-full text-sm font-medium shadow-sm transition-all hover:opacity-90">Day</button>
+                    <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] px-4 py-1.5 rounded-full text-sm font-medium transition-colors">Week</button>
+                    <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] px-4 py-1.5 rounded-full text-sm font-medium transition-colors">Month</button>
+                    <div className="ml-auto text-lg font-bold text-[var(--text-primary)] self-center">256 Km</div>
                 </div>
             </div>
 
-            <div className="h-[200px] w-full relative z-10">
+            <div className="flex-1 w-full relative z-10 min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data} barCategoryGap={20}>
-                        <CartesianGrid vertical={false} stroke="var(--border-color)" strokeDasharray="3 3" opacity={0.3} />
+                    <BarChart data={data} barCategoryGap={20} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                        <CartesianGrid vertical={false} stroke="var(--border-subtle)" strokeDasharray="3 3" opacity={0.5} />
                         <XAxis
                             dataKey="name"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: 'var(--text-tertiary)', fontSize: 12, fontFamily: 'var(--font-dm)' }}
+                            tick={{ fill: 'var(--text-secondary)', fontSize: 12 }}
                             dy={10}
                         />
-                        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-gray-100)', opacity: 0.1, radius: 8 }} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--bg-elevated)', opacity: 0.5, radius: 8 }} />
                         <Bar
                             dataKey="miles"
                             radius={[6, 6, 6, 6]}
@@ -64,8 +64,7 @@ export default function MilesChart() {
                             {data.map((entry, index) => (
                                 <Cell
                                     key={`cell-${index}`}
-                                    fill={index === 2 ? 'var(--color-accent-blue)' : 'var(--text-tertiary)'}
-                                    opacity={index === 2 ? 1 : 0.3}
+                                    fill={index === 2 ? 'var(--color-primary)' : 'var(--bg-elevated)'}
                                     className="hover:opacity-80 transition-opacity cursor-pointer"
                                 />
                             ))}

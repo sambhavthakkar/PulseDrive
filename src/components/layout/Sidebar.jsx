@@ -9,17 +9,19 @@ import {
     Users,
     Calendar,
     MessageSquare,
-    ShieldCheck
+    ShieldCheck,
+    X
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-const NavItem = ({ to, icon: Icon, label }) => (
+const NavItem = ({ to, icon: Icon, label, onClick }) => (
     <NavLink
         to={to}
+        onClick={onClick}
         className={({ isActive }) => cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-sm font-medium",
+            "flex items-center gap-3 px-4 py-3 rounded-[var(--radius-button)] transition-all duration-200 group text-sm font-medium",
             isActive
-                ? "bg-[var(--color-purple)] text-white shadow-lg shadow-[var(--color-purple)]/20"
+                ? "bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--shadow-glow)]"
                 : "text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]"
         )}
     >
@@ -28,40 +30,60 @@ const NavItem = ({ to, icon: Icon, label }) => (
     </NavLink>
 );
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
     return (
-        <aside className="w-64 h-full bg-[var(--bg-primary)] border-r border-[var(--border-color)] flex flex-col p-6 shrink-0 transition-colors">
-            {/* Logo Area */}
-            <div className="flex items-center gap-3 mb-10 px-2">
-                <div className="w-8 h-8 bg-[var(--color-purple)] rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                    P
+        <>
+            {/* Mobile Overlay */}
+            <div
+                className={cn(
+                    "fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 md:hidden",
+                    isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                )}
+                onClick={onClose}
+            />
+
+            {/* Sidebar Container */}
+            <aside className={cn(
+                "fixed md:sticky top-0 left-0 w-64 h-full bg-[var(--bg-card)] border-r border-[var(--border-default)] flex flex-col p-6 shrink-0 transition-transform duration-300 z-50",
+                isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+            )}>
+                {/* Logo Area */}
+                <div className="flex items-center justify-between mb-10 px-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-[var(--color-primary)] rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-[var(--shadow-glow)]">
+                            P
+                        </div>
+                        <h1 className="h3 tracking-tight text-[var(--text-primary)]">Pulse Drive</h1>
+                    </div>
+                    {/* Mobile Close Button */}
+                    <button onClick={onClose} className="md:hidden text-[var(--text-secondary)]" aria-label="Close sidebar">
+                        <X size={24} />
+                    </button>
                 </div>
-                <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Pulse Drive</h1>
-            </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 space-y-2">
-                <div className="text-xs uppercase text-[var(--color-text-muted)] font-bold mb-4 px-4 tracking-wider">Menu</div>
+                {/* Navigation */}
+                <nav className="flex-1 space-y-1.5 overflow-y-auto">
+                    <div className="text-xs uppercase text-[var(--text-muted)] font-bold mb-4 px-4 tracking-wider">Menu</div>
 
-                <NavItem to="/" icon={LayoutDashboard} label="Dashboard" />
-                <NavItem to="/agents" icon={Users} label="Agent Console" />
-                <NavItem to="/schedule" icon={Calendar} label="Scheduling" />
-                <NavItem to="/analysis" icon={Activity} label="Data Analysis" />
-                <NavItem to="/diagnosis" icon={Zap} label="Diagnosis" />
-                <NavItem to="/voice" icon={MessageSquare} label="Voice Command" />
-                <NavItem to="/ueba" icon={ShieldCheck} label="Security (UEBA)" />
-            </nav>
+                    <NavItem to="/" icon={LayoutDashboard} label="Dashboard" onClick={onClose} />
+                    <NavItem to="/agents" icon={Users} label="Agent Console" onClick={onClose} />
+                    <NavItem to="/schedule" icon={Calendar} label="Scheduling" onClick={onClose} />
+                    <NavItem to="/analysis" icon={Activity} label="Data Analysis" onClick={onClose} />
+                    <NavItem to="/diagnosis" icon={Zap} label="Diagnosis" onClick={onClose} />
+                    <NavItem to="/voice" icon={MessageSquare} label="Voice Command" onClick={onClose} />
+                    <NavItem to="/ueba" icon={ShieldCheck} label="Security (UEBA)" onClick={onClose} />
+                </nav>
 
-            {/* Bottom Actions */}
-            <div className="mt-auto pt-6 border-t border-[var(--border-color)] space-y-2">
-                <NavItem to="/settings" icon={Settings} label="Settings" />
+                {/* Bottom Actions */}
+                <div className="mt-auto pt-6 border-t border-[var(--border-default)] space-y-2">
+                    <NavItem to="/settings" icon={Settings} label="Settings" onClick={onClose} />
 
-                <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] transition-all text-sm font-medium">
-                    <LogOut size={20} className="stroke-[1.5px]" />
-                    <span>Log Out</span>
-                </button>
-
-            </div>
-        </aside>
+                    <button className="flex items-center gap-3 px-4 py-3 w-full rounded-[var(--radius-button)] text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] transition-all text-sm font-medium">
+                        <LogOut size={20} className="stroke-[1.5px]" />
+                        <span>Log Out</span>
+                    </button>
+                </div>
+            </aside>
+        </>
     );
 }

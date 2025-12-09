@@ -3,8 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Play, AlertTriangle, XCircle, Shield, ChevronRight, X,
     Database, Stethoscope, Box, Mic, Calendar, MessageSquare, Factory, ShieldAlert,
-    CheckCircle, Clock, Zap, Activity, ArrowRight, Info, AlertCircle
+    CheckCircle, Clock, Zap, Activity, ArrowRight, Info
 } from 'lucide-react';
+import Card from '../components/common/Card';
+import Button from '../components/common/Button';
+import Badge from '../components/common/Badge';
+import { cn } from '../utils/cn';
 
 // Agent definitions
 const AGENTS = [
@@ -20,10 +24,10 @@ const AGENTS = [
 
 // Scenarios
 const SCENARIOS = [
-    { id: 'predictive', name: 'Full Predictive Workflow', icon: Play, color: 'purple', desc: 'Complete maintenance prediction cycle' },
-    { id: 'emergency', name: 'Emergency Breakdown', icon: AlertTriangle, color: 'red', desc: 'Urgent roadside assistance flow' },
-    { id: 'declined', name: 'User Declined Case', icon: XCircle, color: 'gray', desc: 'Handle user rejection gracefully' },
-    { id: 'ueba', name: 'UEBA Threat Simulation', icon: Shield, color: 'amber', desc: 'Security threat detection demo' },
+    { id: 'predictive', name: 'Full Predictive Workflow', icon: Play, color: 'text-[var(--color-primary)]', desc: 'Complete maintenance prediction cycle' },
+    { id: 'emergency', name: 'Emergency Breakdown', icon: AlertTriangle, color: 'text-[var(--color-error)]', desc: 'Urgent roadside assistance flow' },
+    { id: 'declined', name: 'User Declined Case', icon: XCircle, color: 'text-[var(--text-secondary)]', desc: 'Handle user rejection gracefully' },
+    { id: 'ueba', name: 'UEBA Threat Simulation', icon: Shield, color: 'text-[var(--color-warning)]', desc: 'Security threat detection demo' },
 ];
 
 export default function AgentConsole() {
@@ -63,7 +67,6 @@ export default function AgentConsole() {
     }, []);
 
     const handleEvent = (event) => {
-        // Update event log
         setEvents(prev => [...prev.slice(-50), {
             id: Date.now(),
             time: new Date().toLocaleTimeString(),
@@ -72,7 +75,6 @@ export default function AgentConsole() {
             type: event.type || 'info'
         }]);
 
-        // Update agent state
         if (event.agent) {
             setAgentStates(prev => ({
                 ...prev,
@@ -88,20 +90,9 @@ export default function AgentConsole() {
         setRunningScenario(scenario.id);
         setEvents([]);
 
-        // Reset all agents to idle
         const resetStates = {};
         AGENTS.forEach(a => { resetStates[a.id] = { status: 'idle', message: 'Awaiting...' }; });
         setAgentStates(resetStates);
-
-        // Try backend first
-        try {
-            const res = await fetch(`http://localhost:8000/api/agents/trigger`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ scenario: scenario.id })
-            });
-            if (res.ok) return; // Events will come via WebSocket
-        } catch { /* Fallback to simulation */ }
 
         // Simulate workflow
         await simulateWorkflow(scenario);
@@ -135,110 +126,98 @@ export default function AgentConsole() {
     };
 
     return (
-        <div className="h-full flex flex-col gap-4">
+        <div className="h-full flex flex-col gap-6">
             {/* Header */}
-            <div className="flex items-center justify-between shrink-0">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
                 <div>
-                    <h1 className="text-2xl font-bold text-[var(--text-primary)]">Agent Orchestrator Console</h1>
-                    <p className="text-sm text-[var(--text-secondary)]">Live coordination view of all autonomous agents in Pulse Drive</p>
+                    <h1 className="h1 text-[var(--text-primary)]">Agent Orchestrator</h1>
+                    <p className="body-reg text-[var(--text-secondary)]">Live coordination of autonomous agents</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     {runningScenario && (
-                        <motion.div
-                            animate={{ opacity: [1, 0.5, 1] }}
-                            transition={{ repeat: Infinity, duration: 1 }}
-                            className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20"
-                        >
-                            <Activity size={14} className="inline mr-2" />
-                            Running...
-                        </motion.div>
+                        <Badge variant="info" className="flex items-center gap-1 px-3 py-1">
+                            <Activity size={14} className="animate-spin" />
+                            Running Simulation
+                        </Badge>
                     )}
-                    <div className="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 text-sm font-medium border border-green-500/20">
-                        <CheckCircle size={14} className="inline mr-2" />
+                    <Badge variant="success" className="flex items-center gap-2 px-3 py-1">
+                        <CheckCircle size={14} />
                         8 Agents Online
-                    </div>
+                    </Badge>
                 </div>
             </div>
 
-            {/* Main 3-Column Layout */}
-            <div className="flex-1 grid grid-cols-12 gap-4 min-h-0">
+            {/* Main Layout */}
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0">
 
-                {/* LEFT: Scenario Panel */}
-                <div className="col-span-2 flex flex-col gap-3">
-                    <div className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Run Scenario</div>
-                    {SCENARIOS.map(scenario => (
-                        <motion.button
-                            key={scenario.id}
-                            whileHover={{ scale: 1.02, x: 4 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => triggerScenario(scenario)}
-                            disabled={runningScenario}
-                            className={`p-3 rounded-xl text-left transition-all border ${runningScenario === scenario.id
-                                    ? 'bg-[var(--color-purple)]/10 border-[var(--color-purple)]/30'
-                                    : 'bg-[var(--bg-glass)] border-[var(--border-light)] hover:border-[var(--color-purple)]/30'
-                                } ${runningScenario && runningScenario !== scenario.id ? 'opacity-50' : ''}`}
-                        >
-                            <div className="flex items-center gap-2 mb-1">
-                                <scenario.icon size={14} className={`text-${scenario.color}-400`} />
-                                <span className="text-xs font-bold text-[var(--text-primary)]">{scenario.name}</span>
-                            </div>
-                            <p className="text-[10px] text-[var(--text-muted)] leading-tight">{scenario.desc}</p>
-                        </motion.button>
-                    ))}
-                </div>
-
-                {/* CENTER: Vertical Agent Pipeline */}
-                <div className="col-span-5 flex flex-col gap-2 overflow-y-auto pr-2">
-                    <div className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Agent Pipeline</div>
-                    {AGENTS.map((agent, i) => {
-                        const state = agentStates[agent.id] || { status: 'idle', message: 'Awaiting...' };
-                        return (
-                            <motion.div
-                                key={agent.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.05 }}
-                            >
-                                <AgentCard
-                                    agent={agent}
-                                    state={state}
-                                    index={i + 1}
-                                    onClick={() => setSelectedAgent(agent)}
-                                    isLast={i === AGENTS.length - 1}
-                                />
-                            </motion.div>
-                        );
-                    })}
-                </div>
-
-                {/* RIGHT: Live Event Stream */}
-                <div className="col-span-5 flex flex-col bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
-                    <div className="px-4 py-3 border-b border-[var(--border-color)] flex items-center justify-between shrink-0">
-                        <div className="flex items-center gap-2">
-                            <Activity size={14} className="text-[var(--color-purple)]" />
-                            <span className="text-sm font-bold text-[var(--text-primary)]">Agent Event Stream</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            <span className="text-[10px] text-green-400 font-medium">LIVE</span>
-                        </div>
+                {/* 1. Scenarios (Left) */}
+                <Card noPadding className="lg:col-span-3 flex flex-col h-full bg-[var(--bg-card)]">
+                    <div className="p-4 border-b border-[var(--border-subtle)]">
+                        <h3 className="h3 text-[var(--text-primary)]">Scenarios</h3>
                     </div>
-                    <div ref={eventLogRef} className="flex-1 overflow-y-auto p-3 space-y-1.5" style={{ scrollbarWidth: 'thin' }}>
-                        {events.length === 0 ? (
-                            <div className="h-full flex items-center justify-center text-[var(--text-muted)] text-sm">
-                                <div className="text-center">
-                                    <Zap size={24} className="mx-auto mb-2 opacity-30" />
-                                    <p>Select a scenario to start</p>
+                    <div className="p-4 space-y-3 flex-1 overflow-y-auto custom-scrollbar">
+                        {SCENARIOS.map(scenario => (
+                            <button
+                                key={scenario.id}
+                                onClick={() => triggerScenario(scenario)}
+                                disabled={runningScenario}
+                                className={cn(
+                                    "w-full p-3 rounded-[var(--radius-button)] text-left transition-all border group",
+                                    runningScenario === scenario.id
+                                        ? "bg-[var(--color-primary)]/10 border-[var(--color-primary)]/30"
+                                        : "bg-[var(--bg-elevated)] border-transparent hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)]",
+                                    runningScenario && runningScenario !== scenario.id && "opacity-50 cursor-not-allowed"
+                                )}
+                            >
+                                <div className="flex items-center gap-2 mb-1">
+                                    <scenario.icon size={16} className={scenario.color} />
+                                    <span className="font-bold text-sm text-[var(--text-primary)]">{scenario.name}</span>
                                 </div>
+                                <p className="text-xs text-[var(--text-secondary)]">{scenario.desc}</p>
+                            </button>
+                        ))}
+                    </div>
+                </Card>
+
+                {/* 2. Pipeline (Center) */}
+                <Card noPadding className="lg:col-span-5 flex flex-col h-full bg-[var(--bg-card)]">
+                    <div className="p-4 border-b border-[var(--border-subtle)]">
+                        <h3 className="h3 text-[var(--text-primary)]">Agent Pipeline</h3>
+                    </div>
+                    <div className="p-4 space-y-2 flex-1 overflow-y-auto custom-scrollbar">
+                        {AGENTS.map((agent, i) => (
+                            <AgentCard
+                                key={agent.id}
+                                agent={agent}
+                                state={agentStates[agent.id] || { status: 'idle', message: 'Awaiting...' }}
+                                index={i + 1}
+                                onClick={() => setSelectedAgent(agent)}
+                                isLast={i === AGENTS.length - 1}
+                            />
+                        ))}
+                    </div>
+                </Card>
+
+                {/* 3. Event Log (Right) */}
+                <Card noPadding className="lg:col-span-4 flex flex-col h-full bg-[var(--bg-card)]">
+                    <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
+                        <h3 className="h3 text-[var(--text-primary)]">Live Events</h3>
+                        <Badge variant="outline" className="text-xs font-mono">WS: CONNECTED</Badge>
+                    </div>
+                    <div ref={eventLogRef} className="p-3 space-y-2 flex-1 overflow-y-auto custom-scrollbar bg-[var(--bg-elevated)]/30">
+                        {events.length === 0 ? (
+                            <div className="h-full flex flex-col items-center justify-center text-[var(--text-muted)] opacity-50">
+                                <Zap size={32} className="mb-2" />
+                                <p>Waiting for trigger...</p>
                             </div>
                         ) : (
                             events.map(event => <EventLogEntry key={event.id} event={event} />)
                         )}
                     </div>
-                </div>
+                </Card>
             </div>
 
-            {/* Slide-In Agent Details Drawer */}
+            {/* Agent Drawer Details */}
             <AnimatePresence>
                 {selectedAgent && (
                     <AgentDrawer
@@ -253,179 +232,106 @@ export default function AgentConsole() {
     );
 }
 
-// Agent Card Component
+// Sub-components
 const AgentCard = ({ agent, state, index, onClick, isLast }) => {
-    const statusStyles = {
-        idle: 'border-[var(--border-light)] bg-[var(--bg-glass)]',
-        running: 'border-blue-500/40 bg-blue-500/5 shadow-[0_0_15px_rgba(59,130,246,0.15)]',
-        completed: 'border-green-500/40 bg-green-500/5',
-        alert: 'border-red-500/40 bg-red-500/5 animate-pulse',
-    };
-
-    const statusIcons = {
-        idle: <Clock size={14} className="text-[var(--text-muted)]" />,
-        running: <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}><Activity size={14} className="text-blue-400" /></motion.div>,
-        completed: <CheckCircle size={14} className="text-green-400" />,
-        alert: <AlertTriangle size={14} className="text-red-400" />,
-    };
+    const statusClass = {
+        idle: 'border-transparent bg-[var(--bg-elevated)] opacity-60',
+        running: 'border-[var(--color-info)]/30 bg-[var(--color-info)]/5 shadow-[0_0_15px_rgba(40,132,255,0.1)]',
+        completed: 'border-[var(--color-success)]/30 bg-[var(--color-success)]/5',
+        alert: 'border-[var(--color-error)]/30 bg-[var(--color-error)]/5 animate-pulse',
+    }[state.status] || 'border-transparent';
 
     return (
-        <div className="relative">
-            <motion.div
-                whileHover={{ scale: 1.01, x: 4 }}
+        <div className="relative group">
+            <div
                 onClick={onClick}
-                className={`p-3 rounded-xl cursor-pointer transition-all border ${statusStyles[state.status]}`}
+                className={cn(
+                    "relative z-10 p-3 rounded-[var(--radius-button)] cursor-pointer transition-all border flex items-center gap-3 hover:scale-[1.01]",
+                    statusClass
+                )}
             >
-                <div className="flex items-center gap-3">
-                    {/* Step Number */}
-                    <div className="w-6 h-6 rounded-full bg-[var(--bg-card)] border border-[var(--border-color)] flex items-center justify-center text-[10px] font-bold text-[var(--text-muted)]">
-                        {index}
-                    </div>
-
-                    {/* Agent Icon */}
-                    <div className="p-2 rounded-lg" style={{ backgroundColor: `${agent.color}15` }}>
-                        <agent.icon size={16} style={{ color: agent.color }} />
-                    </div>
-
-                    {/* Agent Info */}
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-[var(--text-primary)]">{agent.name}</span>
-                            {statusIcons[state.status]}
-                        </div>
-                        <p className="text-[10px] text-[var(--text-muted)] truncate">{state.message}</p>
-                    </div>
-
-                    {/* Arrow */}
-                    <ChevronRight size={14} className="text-[var(--text-muted)]" />
+                <div className="w-6 h-6 rounded-full bg-[var(--bg-card)] border border-[var(--border-subtle)] flex items-center justify-center text-[10px] font-bold text-[var(--text-muted)]">
+                    {index}
                 </div>
-            </motion.div>
-
-            {/* Connector Line */}
-            {!isLast && (
-                <div className="absolute left-[22px] top-full w-0.5 h-2 bg-[var(--border-light)]"></div>
-            )}
+                <div className="p-2 rounded-lg" style={{ backgroundColor: `${agent.color}20`, color: agent.color }}>
+                    <agent.icon size={18} />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-[var(--text-primary)]">{agent.name}</span>
+                        {state.status === 'running' && <Activity size={14} className="text-[var(--color-info)] animate-spin" />}
+                        {state.status === 'completed' && <CheckCircle size={14} className="text-[var(--color-success)]" />}
+                    </div>
+                    <p className="text-xs text-[var(--text-secondary)] truncate">{state.message}</p>
+                </div>
+                <ChevronRight size={16} className="text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
+            </div>
+            {!isLast && <div className="absolute left-[23px] top-full w-0.5 h-2 bg-[var(--border-subtle)] -z-0" />}
         </div>
     );
 };
 
-// Event Log Entry Component
 const EventLogEntry = ({ event }) => {
-    const agentInfo = AGENTS.find(a => a.id === event.agent.toLowerCase()) || { color: '#888', icon: Info };
-    const typeStyles = {
-        info: 'border-l-blue-500',
-        warning: 'border-l-amber-500',
-        error: 'border-l-red-500',
-        success: 'border-l-green-500',
-    };
+    const agentInfo = AGENTS.find(a => a.id === event.agent.toLowerCase());
+    const color = agentInfo ? agentInfo.color : 'var(--text-muted)';
 
     return (
         <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className={`flex items-start gap-2 p-2 rounded-lg bg-[var(--bg-glass)] border-l-2 ${typeStyles[event.type] || typeStyles.info}`}
+            className="flex gap-3 p-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
         >
-            <span className="text-[10px] text-[var(--text-muted)] font-mono shrink-0 pt-0.5">{event.time}</span>
-            <span
-                className="text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0"
-                style={{ backgroundColor: `${agentInfo.color}20`, color: agentInfo.color }}
-            >
-                {event.agent}
-            </span>
-            <span className="text-xs text-[var(--text-primary)] flex-1">{event.message}</span>
+            <div className="w-1 bg-current rounded-full shrink-0 opacity-50" style={{ color }} />
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-[10px] uppercase font-bold tracking-wider opacity-70" style={{ color }}>{event.agent}</span>
+                    <span className="text-[10px] text-[var(--text-muted)] ml-auto">{event.time}</span>
+                </div>
+                <p className="text-xs text-[var(--text-secondary)] break-words leading-relaxed">{event.message}</p>
+            </div>
         </motion.div>
     );
 };
 
-// Agent Details Drawer
-const AgentDrawer = ({ agent, state, events, onClose }) => {
-    return (
-        <>
-            {/* Backdrop */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={onClose}
-                className="fixed inset-0 bg-black/50 z-40"
-            />
-
-            {/* Drawer */}
-            <motion.div
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed top-0 right-0 h-full w-96 bg-[var(--bg-card)] border-l border-[var(--border-color)] z-50 flex flex-col"
-            >
-                {/* Header */}
-                <div className="p-4 border-b border-[var(--border-color)] flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg" style={{ backgroundColor: `${agent.color}15` }}>
-                            <agent.icon size={20} style={{ color: agent.color }} />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-[var(--text-primary)]">{agent.name}</h3>
-                            <p className="text-xs text-[var(--text-muted)]">{agent.desc}</p>
-                        </div>
+const AgentDrawer = ({ agent, state, events, onClose }) => (
+    <>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity" onClick={onClose} />
+        <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            className="fixed top-0 right-0 h-full w-full max-w-md bg-[var(--bg-card)] border-l border-[var(--border-default)] z-50 flex flex-col shadow-2xl"
+        >
+            <div className="p-6 border-b border-[var(--border-subtle)] flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl" style={{ backgroundColor: `${agent.color}20`, color: agent.color }}>
+                        <agent.icon size={24} />
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-lg hover:bg-[var(--bg-glass)]">
-                        <X size={18} className="text-[var(--text-muted)]" />
-                    </button>
-                </div>
-
-                {/* Status */}
-                <div className="p-4 border-b border-[var(--border-color)]">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs text-[var(--text-muted)] uppercase">Current Status</span>
-                        <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${state?.status === 'running' ? 'bg-blue-500/10 text-blue-400' :
-                                state?.status === 'completed' ? 'bg-green-500/10 text-green-400' :
-                                    state?.status === 'alert' ? 'bg-red-500/10 text-red-400' :
-                                        'bg-gray-500/10 text-gray-400'
-                            }`}>
-                            {state?.status || 'Idle'}
-                        </span>
-                    </div>
-                    <p className="text-sm text-[var(--text-primary)]">{state?.message || 'Awaiting trigger...'}</p>
-                </div>
-
-                {/* Workflow Flow */}
-                <div className="p-4 border-b border-[var(--border-color)]">
-                    <div className="text-xs text-[var(--text-muted)] uppercase mb-3">Data Flow</div>
-                    <div className="flex items-center justify-between text-xs">
-                        <div className="p-2 rounded-lg bg-[var(--bg-glass)] text-center flex-1">
-                            <div className="text-[var(--text-muted)]">Receives</div>
-                            <div className="text-[var(--text-primary)] font-medium">Events</div>
-                        </div>
-                        <ArrowRight size={14} className="text-[var(--text-muted)] mx-2" />
-                        <div className="p-2 rounded-lg bg-[var(--color-purple)]/10 text-center flex-1">
-                            <div className="text-[var(--text-muted)]">Processes</div>
-                            <div className="text-[var(--color-purple)] font-medium">Analysis</div>
-                        </div>
-                        <ArrowRight size={14} className="text-[var(--text-muted)] mx-2" />
-                        <div className="p-2 rounded-lg bg-[var(--bg-glass)] text-center flex-1">
-                            <div className="text-[var(--text-muted)]">Outputs</div>
-                            <div className="text-[var(--text-primary)] font-medium">Actions</div>
-                        </div>
+                    <div>
+                        <h2 className="h3 text-[var(--text-primary)]">{agent.name}</h2>
+                        <Badge variant="outline" className="mt-1">{state?.status || 'Idle'}</Badge>
                     </div>
                 </div>
-
-                {/* Recent Events */}
-                <div className="flex-1 p-4 overflow-y-auto">
-                    <div className="text-xs text-[var(--text-muted)] uppercase mb-3">Recent Events ({events.length})</div>
-                    <div className="space-y-2">
-                        {events.slice(-10).map(e => (
-                            <div key={e.id} className="p-2 rounded-lg bg-[var(--bg-glass)] text-xs">
-                                <span className="text-[var(--text-muted)] font-mono">{e.time}</span>
-                                <span className="text-[var(--text-primary)] ml-2">{e.message}</span>
+                <Button variant="ghost" size="icon" onClick={onClose}><X size={20} /></Button>
+            </div>
+            <div className="p-6 flex-1 overflow-y-auto">
+                <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase mb-4">Activity Log</h4>
+                <div className="space-y-4">
+                    {events.map((e, i) => (
+                        <div key={i} className="flex gap-4">
+                            <div className="flex flex-col items-center">
+                                <div className="w-2 h-2 rounded-full bg-[var(--text-muted)]" />
+                                <div className="w-px h-full bg-[var(--border-subtle)] my-1" />
                             </div>
-                        ))}
-                        {events.length === 0 && (
-                            <p className="text-[var(--text-muted)] text-xs">No events yet</p>
-                        )}
-                    </div>
+                            <div className="pb-4">
+                                <div className="text-xs text-[var(--text-muted)] mb-1">{e.time}</div>
+                                <p className="text-sm text-[var(--text-primary)]">{e.message}</p>
+                            </div>
+                        </div>
+                    ))}
+                    {events.length === 0 && <p className="text-sm text-[var(--text-muted)]">No activity recorded for this session.</p>}
                 </div>
-            </motion.div>
-        </>
-    );
-};
+            </div>
+        </motion.div>
+    </>
+);
