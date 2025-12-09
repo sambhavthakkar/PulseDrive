@@ -122,14 +122,16 @@ export default function Profile() {
                 <div className="rounded-[var(--radius-card)] overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] h-full">
                     {/* Vehicle Image */}
                     <div className="relative h-48 bg-[var(--bg-elevated)] overflow-hidden">
+                        {/* Background Effect */}
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-primary)_0%,_transparent_70%)] opacity-10"></div>
                         <img
-                            src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=600&h=300&fit=crop&auto=format"
-                            alt="Jeep Compass"
-                            className="w-full h-full object-cover opacity-90"
+                            src="https://pngimg.com/d/jeep_PNG48.png"
+                            alt="Jeep Wrangler"
+                            className="w-full h-full object-contain p-2 drop-shadow-[0_10px_20px_rgba(0,0,0,0.3)] relative z-10"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-transparent to-transparent"></div>
                         {/* Connected Badge */}
-                        <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-[var(--color-success)]/20 border border-[var(--color-success)]/30 flex items-center gap-1.5 backdrop-blur-md">
+                        <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-[var(--color-success)]/20 border border-[var(--color-success)]/30 flex items-center gap-1.5 backdrop-blur-md z-20">
                             <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)] animate-pulse"></span>
                             <span className="text-[10px] text-[var(--color-success)] font-bold">Connected</span>
                         </div>
@@ -139,8 +141,8 @@ export default function Profile() {
                     <div className="p-6">
                         <div className="flex items-center justify-between mb-4">
                             <div>
-                                <h3 className="h3 text-[var(--text-primary)]">Jeep Compass</h3>
-                                <p className="body-reg text-[var(--text-secondary)]">2025 Trailhawk 4x4</p>
+                                <h3 className="h3 text-[var(--text-primary)]">Jeep Wrangler</h3>
+                                <p className="body-reg text-[var(--text-secondary)]">Rubicon 392 • 2024</p>
                             </div>
                             <div className="p-2 rounded-xl bg-[var(--color-primary)]/10">
                                 <Car size={24} className="text-[var(--color-primary)]" />
@@ -148,10 +150,10 @@ export default function Profile() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-3 text-sm">
-                            <VehicleSpec label="VIN" value="MCA-JP-2025-X7" mono />
+                            <VehicleSpec label="VIN" value="1C4-JJ-392-X9" mono />
                             <VehicleSpec label="PulseOS" value="v2.4.0" highlight />
-                            <VehicleSpec label="Engine" value="2.0L Turbo Diesel" />
-                            <VehicleSpec label="Transmission" value="9-Speed Auto" />
+                            <VehicleSpec label="Engine" value="6.4L V8 HEMI" />
+                            <VehicleSpec label="Transmission" value="8-Speed Auto" />
                         </div>
                     </div>
                 </div>

@@ -8,7 +8,7 @@ export function cn(...inputs) {
 
 export default function Card({ title, subtitle, children, className, actionItem, noPadding = false }) {
     return (
-        <div className={cn("card-base flex flex-col h-full", !noPadding && "p-6", className)}>
+        <div className={cn("card-base flex flex-col", !noPadding && "p-6", className)}>
             {(title || actionItem) && (
                 <div className={cn("flex items-center justify-between shrink-0 mb-6", noPadding && "p-6 pb-0")}>
                     <div className="flex flex-col gap-1">

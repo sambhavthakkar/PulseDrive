@@ -70,7 +70,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     <NavItem to="/schedule" icon={Calendar} label="Scheduling" onClick={onClose} />
                     <NavItem to="/analysis" icon={Activity} label="Data Analysis" onClick={onClose} />
                     <NavItem to="/diagnosis" icon={Zap} label="Diagnosis" onClick={onClose} />
-                    <NavItem to="/voice" icon={MessageSquare} label="Voice Command" onClick={onClose} />
+                    <NavItem to="/voice" icon={MessageSquare} label="Feedback Agent" onClick={onClose} />
                     <NavItem to="/ueba" icon={ShieldCheck} label="Security (UEBA)" onClick={onClose} />
                 </nav>
 
