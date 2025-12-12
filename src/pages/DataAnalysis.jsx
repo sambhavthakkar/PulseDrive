@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useViewState } from '../context/ViewStateContext';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Badge from '../components/common/Badge';
@@ -12,9 +13,34 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart,
 import { cn } from '../utils/cn';
 
 export default function DataAnalysis() {
+    const { viewState, setVisited, pageData, setPageData } = useViewState();
+    const shouldAnimate = !viewState.dataAnalysisVisited;
+
+    // Initialize from persisted data or defaults
+    const savedData = pageData?.dataAnalysis || {};
     const [isStreamActive, setIsStreamActive] = useState(true);
-    const [telemetry, setTelemetry] = useState({ rpm: 2400, temp: 195, vibration: 0.02, latency: 45 });
-    const [dataPoints, setDataPoints] = useState([]);
+    const [telemetry, setTelemetry] = useState(savedData.telemetry || { rpm: 2400, temp: 195, vibration: 0.02, latency: 45 });
+    const [dataPoints, setDataPoints] = useState(savedData.dataPoints || []);
+
+    // Refs to track latest state for unmount saving
+    const telemetryRef = useRef(telemetry);
+    const dataPointsRef = useRef(dataPoints);
+
+    useEffect(() => {
+        telemetryRef.current = telemetry;
+        dataPointsRef.current = dataPoints;
+    }, [telemetry, dataPoints]);
+
+    useEffect(() => {
+        setVisited('dataAnalysisVisited');
+        return () => {
+            // Save state to context on unmount
+            setPageData('dataAnalysis', {
+                telemetry: telemetryRef.current,
+                dataPoints: dataPointsRef.current
+            });
+        };
+    }, []);
 
     // Simulate Live Data Feed
     useEffect(() => {
@@ -75,6 +101,7 @@ export default function DataAnalysis() {
                             icon={Activity}
                             color="text-[var(--color-primary)]"
                             tooltip="Rotations Per Minute - Core Engine Speed"
+                            shouldAnimate={shouldAnimate}
                         />
                         <TelemetryRow
                             label="Core Temperature"
@@ -83,6 +110,7 @@ export default function DataAnalysis() {
                             icon={TrendingUp}
                             color="text-[var(--color-error)]"
                             tooltip="Internal Battery/Engine Temperature"
+                            shouldAnimate={shouldAnimate}
                         />
                         <TelemetryRow
                             label="Vibration Level"
@@ -91,6 +119,7 @@ export default function DataAnalysis() {
                             icon={Zap}
                             color="text-[var(--color-warning)]"
                             tooltip="Chassis Vibration Force"
+                            shouldAnimate={shouldAnimate}
                         />
                         <TelemetryRow
                             label="Network Latency"
@@ -99,6 +128,7 @@ export default function DataAnalysis() {
                             icon={Wifi}
                             color="text-[var(--color-info)]"
                             tooltip="Cloud Sync Delay"
+                            shouldAnimate={shouldAnimate}
                         />
 
                         <div className="pt-4 border-t border-[var(--border-subtle)]">
@@ -343,7 +373,7 @@ const ControlButton = ({ icon: Icon, label, active, onClick }) => (
     </motion.button>
 );
 
-const TelemetryRow = ({ label, value, unit, icon: Icon, color, tooltip }) => (
+const TelemetryRow = ({ label, value, unit, icon: Icon, color, tooltip, shouldAnimate }) => (
     <div className="group relative flex items-center justify-between p-2 rounded-xl hover:bg-[var(--bg-elevated)] transition-colors cursor-default">
         <div className="flex items-center gap-3">
             <div className={cn("p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] group-hover:border-[var(--border-default)] transition-colors", color)}>
@@ -354,7 +384,7 @@ const TelemetryRow = ({ label, value, unit, icon: Icon, color, tooltip }) => (
         <div className="font-mono text-lg font-bold text-[var(--text-primary)]">
             <motion.span
                 key={value}
-                initial={{ opacity: 0.5 }}
+                initial={shouldAnimate ? { opacity: 0.5 } : { opacity: 1 }}
                 animate={{ opacity: 1 }}
                 className="tabular-nums"
             >

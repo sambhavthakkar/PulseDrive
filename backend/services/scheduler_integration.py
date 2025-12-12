@@ -22,7 +22,7 @@ class SchedulerIntegration:
         return [
             {
                 "id": "SC001",
-                "name": "Hero Service Center - North",
+                "name": "Jeep Service Center - North",
                 "slots": [
                     {
                         "slot_time": (now + timedelta(hours=i)).isoformat(),
@@ -33,7 +33,7 @@ class SchedulerIntegration:
             },
             {
                 "id": "SC002",
-                "name": "Hero Service Center - South",
+                "name": "Jeep Service Center - South",
                 "slots": [
                     {
                         "slot_time": (now + timedelta(hours=i)).isoformat(),

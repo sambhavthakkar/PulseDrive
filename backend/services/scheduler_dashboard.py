@@ -212,7 +212,7 @@ def generate_sample():
         {
             "vehicle_id": "V201",
             "owner": {"name": "Demo User", "contact": "demo@example.com"},
-            "center_name": "Hero Service Center - North",
+            "center_name": "Jeep Service Center - North",
             "slot_datetime": datetime.now().isoformat(),
             "slot_id": "DEMO-1",
             "predicted_maintenance": [{"component":"brake","urgency":5}]

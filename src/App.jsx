@@ -24,77 +24,81 @@ const Placeholder = ({ title }) => (
   </div>
 );
 
+import { ViewStateProvider } from './context/ViewStateContext';
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Dashboard />
-            </Suspense>
-          } />
-          <Route path="agents" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <AgentConsole />
-            </Suspense>
-          } />
+    <ViewStateProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Dashboard />
+              </Suspense>
+            } />
+            <Route path="agents" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <AgentConsole />
+              </Suspense>
+            } />
 
-          <Route path="diagnosis" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Diagnosis />
-            </Suspense>
-          } />
-          <Route path="simulation" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <DigitalTwin />
-            </Suspense>
-          } />
-          <Route path="voice" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <VoiceAgent />
-            </Suspense>
-          } />
-          <Route path="schedule" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Scheduling />
-            </Suspense>
-          } />
-          <Route path="ueba" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <UEBA />
-            </Suspense>
-          } />
-          <Route path="analysis" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <DataAnalysis />
-            </Suspense>
-          } />
-          <Route path="manufacturing" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Manufacturing />
-            </Suspense>
-          } />
-          <Route path="feedback" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Feedback />
-            </Suspense>
-          } />
-          <Route path="settings" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Settings />
-            </Suspense>
-          } />
-          <Route path="profile" element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Profile />
-            </Suspense>
-          } />
+            <Route path="diagnosis" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Diagnosis />
+              </Suspense>
+            } />
+            <Route path="simulation" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <DigitalTwin />
+              </Suspense>
+            } />
+            <Route path="voice" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <VoiceAgent />
+              </Suspense>
+            } />
+            <Route path="schedule" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Scheduling />
+              </Suspense>
+            } />
+            <Route path="ueba" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <UEBA />
+              </Suspense>
+            } />
+            <Route path="analysis" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <DataAnalysis />
+              </Suspense>
+            } />
+            <Route path="manufacturing" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Manufacturing />
+              </Suspense>
+            } />
+            <Route path="feedback" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Feedback />
+              </Suspense>
+            } />
+            <Route path="settings" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Settings />
+              </Suspense>
+            } />
+            <Route path="profile" element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Profile />
+              </Suspense>
+            } />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ViewStateProvider>
   );
 }
 

@@ -137,7 +137,7 @@ export default function Scheduling() {
                                 <div>
                                     <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">AI Recommendation</h4>
                                     <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                                        Based on your vehicle's telemetry, we've found optimal slots at <span className="text-[var(--text-primary)] font-bold">Hero Service Center - North</span>. Parts are in stock.
+                                        Based on your vehicle's telemetry, we've found optimal slots at <span className="text-[var(--text-primary)] font-bold">Jeep Service Center - North</span>. Parts are in stock.
                                     </p>
                                 </div>
                             </motion.div>
@@ -165,7 +165,7 @@ export default function Scheduling() {
 
                     {/* Service Center Details */}
                     <div className="flex-1">
-                        <Card title="Service Center" className="h-full">
+                        <Card title="Service Center">
                             <div className="flex flex-col md:flex-row gap-6 h-full">
                                 {/* Map Placeholder - Stretches */}
                                 <div className="w-full md:w-48 bg-[var(--bg-elevated)] rounded-xl overflow-hidden relative group min-h-[128px]">
@@ -187,7 +187,7 @@ export default function Scheduling() {
                                     <div>
                                         <div className="flex justify-between items-start">
                                             <h4 className="font-bold text-[var(--text-primary)] text-lg">
-                                                {selectedSlotData?.centerName || "Hero Service Center"}
+                                                {selectedSlotData?.centerName || "Jeep Service Center"}
                                             </h4>
                                             <Badge variant="warning" className="flex items-center gap-1 text-xs">
                                                 <Star size={10} fill="currentColor" /> 4.9
@@ -209,7 +209,7 @@ export default function Scheduling() {
 
                 {/* RIGHT COLUMN: Summary */}
                 <div className="h-full">
-                    <Card title="Appointment Summary" className="h-full border-[var(--color-primary)]/30 bg-[var(--color-primary)]/5 sticky top-6">
+                    <Card title="Appointment Summary" className="border-[var(--color-primary)]/30 bg-[var(--color-primary)]/5 sticky top-6">
                         <div className="space-y-6">
 
                             {/* Items */}
@@ -252,7 +252,7 @@ export default function Scheduling() {
                                 <div className="flex justify-between items-end">
                                     <span className="text-sm text-[var(--text-secondary)]">Estimated Cost</span>
                                     <div className="text-right">
-                                        <div className="text-2xl font-bold text-[var(--text-primary)]">₹2,000.00</div>
+                                        <div className="text-2xl font-bold text-[var(--text-primary)]">₹3,500.00</div>
                                         <div className="text-xs text-[var(--color-success)] font-bold">Covered by Warranty</div>
                                     </div>
                                 </div>
