@@ -66,7 +66,12 @@ async def text_to_speech(text: str, voice_id: Optional[str] = None) -> Optional[
                 print(f"[ElevenLabs] ✓ Audio generated successfully ({len(audio_base64)} bytes)")
                 return audio_base64
             else:
-                print(f"[ElevenLabs] ✗ Error: {response.status_code} - {response.text[:200]}")
+                print(f"[ElevenLabs] ✗ Error: {response.status_code} - {response.text}")
+                try:
+                    error_detail = response.json()
+                    print(f"[ElevenLabs] Error Details: {error_detail}")
+                except:
+                    pass
                 return None
                 
     except Exception as e:

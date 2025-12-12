@@ -14,10 +14,10 @@ BASE_URL = "https://693709f0f8dc350aff332a08.mockapi.io/api/v1"
 
 class SchedulerIntegration:
     def __init__(self):
-        self.centers = self._generate_local_centers()
+        pass  # No static initialization
 
     def _generate_local_centers(self):
-        """Generate service centers and slots locally as per original agent logic."""
+        """Generate service centers and slots locally relative to NOW."""
         now = datetime.now().replace(minute=0, second=0, microsecond=0)
         return [
             {
@@ -28,7 +28,7 @@ class SchedulerIntegration:
                         "slot_time": (now + timedelta(hours=i)).isoformat(),
                         "slot_id": f"SC001-SLOT-{i}"
                     }
-                    for i in range(1, 24) # Expanded range for better availability
+                    for i in range(1, 48)  # Next 48 hours
                 ]
             },
             {
@@ -39,7 +39,7 @@ class SchedulerIntegration:
                         "slot_time": (now + timedelta(hours=i)).isoformat(),
                         "slot_id": f"SC002-SLOT-{i}"
                     }
-                    for i in range(2, 24)
+                    for i in range(2, 48)
                 ]
             }
         ]
@@ -80,11 +80,13 @@ class SchedulerIntegration:
 
     def find_available_slots(self, within_hours=48) -> List[Dict]:
         """Find available slots across all centers."""
+        # regenerate centers to get fresh time slots
+        centers = self._generate_local_centers()
         taken_slots = self.get_taken_slots()
         now_local = datetime.now().replace(minute=0, second=0, microsecond=0)
         candidates = []
 
-        for center in self.centers:
+        for center in centers:
             for slot in center["slots"]:
                 dt = datetime.fromisoformat(slot["slot_time"])
                 sid = slot["slot_id"]
