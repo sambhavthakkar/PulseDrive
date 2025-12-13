@@ -1,0 +1,25 @@
+VehicleID,ServiceType,Cost,Date
+V101,Brake Pad Replacement,1995,2024-01-01
+V102,Brake Pad Replacement,1483,2024-01-01
+V102,Battery Check,1033,2024-01-01
+V102,Battery Check,1408,2024-01-01
+V102,Brake Pad Replacement,648,2024-01-01
+V103,Tire Rotation,1887,2024-01-01
+V103,Oil Change,656,2024-01-01
+V103,Tire Rotation,1305,2024-01-01
+V104,Tire Rotation,915,2024-01-01
+V104,Battery Check,1075,2024-01-01
+V104,Brake Pad Replacement,355,2024-01-01
+V106,Brake Pad Replacement,471,2024-01-01
+V106,Tire Rotation,1709,2024-01-01
+V106,Brake Pad Replacement,1429,2024-01-01
+V106,Brake Pad Replacement,1961,2024-01-01
+V107,Oil Change,174,2024-01-01
+V107,Oil Change,1648,2024-01-01
+V108,Battery Check,440,2024-01-01
+V108,Oil Change,897,2024-01-01
+V108,Oil Change,1770,2024-01-01
+V108,Battery Check,1917,2024-01-01
+V109,Brake Pad Replacement,1503,2024-01-01
+V109,Brake Pad Replacement,1157,2024-01-01
+V109,Battery Check,1966,2024-01-01

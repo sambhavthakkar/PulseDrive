@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Card from '../components/common/Card';
 import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
@@ -6,6 +7,12 @@ import { motion } from 'framer-motion';
 import { AlertCircle, Zap, Activity, CheckCircle, Info, Sparkles, Wrench, ArrowRight } from 'lucide-react';
 
 export default function Diagnosis() {
+    const navigate = useNavigate();
+
+    const handleScheduleService = () => {
+        navigate('/schedule');
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -165,7 +172,7 @@ export default function Diagnosis() {
                         </div>
                         <h3 className="h3 text-[var(--text-primary)] mb-2">Critical Issues</h3>
                         <p className="body-reg text-[var(--text-muted)] mb-6">Immediate attention required for reliable operation.</p>
-                        <Button variant="primary" className="w-full justify-center">
+                        <Button variant="primary" className="w-full justify-center" onClick={handleScheduleService}>
                             Schedule Service <ArrowRight size={16} />
                         </Button>
                     </Card>

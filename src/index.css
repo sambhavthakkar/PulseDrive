@@ -261,3 +261,22 @@ body {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
+
+/* ============================================
+   OMNIDIMENSION WIDGET OVERRIDES
+   ============================================ */
+#chat-helper-button-container {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  bottom: 30px !important;
+  z-index: 9999 !important;
+}
+
+#omni-widget-component {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  bottom: 100px !important;
+  z-index: 9999 !important;
+}

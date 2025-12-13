@@ -101,8 +101,30 @@ async def trigger_workflow(trigger: WorkflowTrigger):
     return {"status": "started", "workflow_id": trigger.workflow_id}
 
 
+from services.data_analysis_agent import data_analysis_agent
+
+@router.post("/analyze")
+async def run_analysis():
+    """
+    Trigger the Data Analysis Agent to process vehicle data.
+    """
+    report = data_analysis_agent.analyze()
+    
+    # Broadcast completion event
+    await manager.broadcast({
+        "timestamp": datetime.now().isoformat(),
+        "type": "agent_complete",
+        "agent": "data_analysis",
+        "status": "completed",
+        "message": f"Analysis complete. Processed {len(report)} vehicles."
+    })
+    
+    return {"status": "success", "report": report}
+
+
 async def run_simulated_workflow(workflow_id: str):
     """Simulate a multi-agent workflow with events."""
+    # ... (rest of the function remains same)
     sequence = [
         ("data_analysis", "Ingesting telemetry stream...", "Data normalized. No errors."),
         ("diagnosis", "Running predictive models...", "Analysis complete. Risk score: 42/100"),
@@ -122,6 +144,11 @@ async def run_simulated_workflow(workflow_id: str):
             "message": start_msg
         })
         
+        # If it's the data analysis step, actually run the analysis logic briefly
+        if agent_id == "data_analysis":
+             # We can run it here to simulate real work, but for now just sleep
+             pass
+
         await asyncio.sleep(1.5)  # Simulate processing
         
         # Agent complete

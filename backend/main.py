@@ -6,6 +6,9 @@ Main application server for the autonomous predictive maintenance platform.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Import routers
 from routers import telematics, diagnostics, scheduling, feedback, voice, agents, ueba, dashboard
@@ -16,13 +19,14 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS Middleware for React frontend
+# CORS Middleware for React frontend - Allow all origins for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=["*"],  # Allow all origins in development
+    allow_credentials=False,  # Must be False when allow_origins is "*"
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Register routers

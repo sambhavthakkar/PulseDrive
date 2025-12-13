@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Calendar, MapPin, Clock, Check, Sparkles, Navigation,
@@ -8,21 +8,73 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Badge from '../components/common/Badge';
 import { cn } from '../utils/cn';
+import { findAvailableSlots, confirmBooking } from '../services/backendApi';
 
 const STEPS = ['Diagnosis', 'Schedule', 'Confirm'];
 
-const SLOTS = [
-    { id: 1, time: '09:00 AM', status: 'available', load: 'low' },
-    { id: 2, time: '10:30 AM', status: 'recommended', load: 'low', badge: 'AI Integrated' },
-    { id: 3, time: '01:00 PM', status: 'booked', load: 'high' },
-    { id: 4, time: '02:30 PM', status: 'available', load: 'med' },
-    { id: 5, time: '04:00 PM', status: 'available', load: 'low' },
-    { id: 6, time: '05:30 PM', status: 'high-demand', load: 'high', badge: 'High Demand' },
-];
-
 export default function Scheduling() {
-    const [selectedSlot, setSelectedSlot] = useState(2); // Default to AI recommended
+    const [selectedSlot, setSelectedSlot] = useState(null);
     const [step, setStep] = useState(1); // 0: Diagnosis, 1: Schedule, 2: Confirm
+    const [slots, setSlots] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [bookingStatus, setBookingStatus] = useState(null);
+
+    const [email, setEmail] = useState(''); // New state for email
+
+    useEffect(() => {
+        loadSlots();
+    }, []);
+
+    const loadSlots = async () => {
+        setLoading(true);
+        try {
+            const data = await findAvailableSlots();
+            // Transform backend data to frontend format
+            const formattedSlots = data.map(s => {
+                const date = new Date(s.slot_time);
+                return {
+                    id: s.slot_id,
+                    time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    fullDate: date,
+                    status: 'available',
+                    load: 'low', // Mock load
+                    centerName: s.center_name
+                };
+            });
+            setSlots(formattedSlots);
+            // Select first slot by default if available
+            if (formattedSlots.length > 0) {
+                setSelectedSlot(formattedSlots[0].id);
+            }
+        } catch (error) {
+            console.error("Failed to load slots", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleConfirm = async () => {
+        if (!selectedSlot || !email) return; // Validate email
+
+        setBookingStatus('processing');
+        try {
+            const slot = slots.find(s => s.id === selectedSlot);
+            await confirmBooking({
+                vehicle_id: "V101", // Mock vehicle ID
+                owner: { name: "Sambhav Thakkar", contact: "sambhav@example.com" },
+                email: email, // Pass email to backend
+                slot_id: slot.id,
+                service_type: "brake_service" // Mock service type
+            });
+            setBookingStatus('confirmed');
+            setStep(3); // Move to completion (or next step)
+        } catch (error) {
+            console.error("Booking failed", error);
+            setBookingStatus('error');
+        }
+    };
+
+    const selectedSlotData = slots.find(s => s.id === selectedSlot);
 
     return (
         <div className="space-y-8 pb-10 max-w-[1600px] mx-auto">
@@ -85,22 +137,29 @@ export default function Scheduling() {
                                 <div>
                                     <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">AI Recommendation</h4>
                                     <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                                        The <span className="text-[var(--text-primary)] font-bold">10:30 AM</span> slot is optimal. Technician <span className="text-[var(--text-primary)]">Amit S.</span> (4x4 Powertrain Specialist) is available, and parts for "Brake Fluid Replacement" are currently in stock. Estimated wait time: &lt;45 mins.
+                                        Based on your vehicle's telemetry, we've found optimal slots at <span className="text-[var(--text-primary)] font-bold">Hero Service Center - North</span>. Parts are in stock.
                                     </p>
                                 </div>
                             </motion.div>
 
                             {/* Slots Grid */}
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {SLOTS.map(slot => (
-                                    <TimeSlotCard
-                                        key={slot.id}
-                                        slot={slot}
-                                        isSelected={selectedSlot === slot.id}
-                                        onSelect={() => setSelectedSlot(slot.id)}
-                                    />
-                                ))}
-                            </div>
+                            {loading ? (
+                                <div className="text-center py-10 text-[var(--text-muted)]">Loading available slots...</div>
+                            ) : (
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {slots.map(slot => (
+                                        <TimeSlotCard
+                                            key={slot.id}
+                                            slot={slot}
+                                            isSelected={selectedSlot === slot.id}
+                                            onSelect={() => setSelectedSlot(slot.id)}
+                                        />
+                                    ))}
+                                    {slots.length === 0 && (
+                                        <div className="col-span-3 text-center py-10 text-[var(--text-muted)]">No slots available for the next 48 hours.</div>
+                                    )}
+                                </div>
+                            )}
                         </Card>
                     </div>
 
@@ -127,12 +186,14 @@ export default function Scheduling() {
                                 <div className="flex-1 space-y-4 flex flex-col justify-center">
                                     <div>
                                         <div className="flex justify-between items-start">
-                                            <h4 className="font-bold text-[var(--text-primary)] text-lg">Jeep Service Center - New Delhi</h4>
+                                            <h4 className="font-bold text-[var(--text-primary)] text-lg">
+                                                {selectedSlotData?.centerName || "Hero Service Center"}
+                                            </h4>
                                             <Badge variant="warning" className="flex items-center gap-1 text-xs">
                                                 <Star size={10} fill="currentColor" /> 4.9
                                             </Badge>
                                         </div>
-                                        <p className="text-sm text-[var(--text-secondary)] mt-1">A-16, Mathura Rd, Mohan Cooperative Industrial Estate, New Delhi, 110044</p>
+                                        <p className="text-sm text-[var(--text-secondary)] mt-1">Authorized Service Partner</p>
                                     </div>
 
                                     <div className="grid grid-cols-3 gap-3">
@@ -176,8 +237,12 @@ export default function Scheduling() {
                                         exit={{ opacity: 0, y: -5 }}
                                         className="text-right"
                                     >
-                                        <div className="text-lg font-bold text-[var(--text-primary)]">{SLOTS.find(s => s.id === selectedSlot)?.time}</div>
-                                        <div className="text-xs text-[var(--color-primary)] font-bold">Oct 12, 2025</div>
+                                        <div className="text-lg font-bold text-[var(--text-primary)]">
+                                            {selectedSlotData?.time || "--:--"}
+                                        </div>
+                                        <div className="text-xs text-[var(--color-primary)] font-bold">
+                                            {selectedSlotData?.fullDate?.toLocaleDateString() || "Select a slot"}
+                                        </div>
                                     </motion.div>
                                 </AnimatePresence>
                             </div>
@@ -187,10 +252,22 @@ export default function Scheduling() {
                                 <div className="flex justify-between items-end">
                                     <span className="text-sm text-[var(--text-secondary)]">Estimated Cost</span>
                                     <div className="text-right">
-                                        <div className="text-2xl font-bold text-[var(--text-primary)]">₹0.00</div>
+                                        <div className="text-2xl font-bold text-[var(--text-primary)]">₹2,000.00</div>
                                         <div className="text-xs text-[var(--color-success)] font-bold">Covered by Warranty</div>
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Email Input */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Confirmation Email</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Enter your email"
+                                    className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-lg text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                                />
                             </div>
 
                             {/* CTA */}
@@ -200,8 +277,11 @@ export default function Scheduling() {
                                 className="w-full justify-center py-4 text-base shadow-[0_0_30px_rgba(var(--color-brand-primary-rgb),0.3)] hover:shadow-[0_0_50px_rgba(var(--color-brand-primary-rgb),0.5)]"
                                 icon={ChevronRight}
                                 iconPosition="right"
+                                onClick={handleConfirm}
+                                disabled={!selectedSlot || !email || bookingStatus === 'processing' || bookingStatus === 'confirmed'}
                             >
-                                Confirm Appointment
+                                {bookingStatus === 'processing' ? 'Confirming...' :
+                                    bookingStatus === 'confirmed' ? 'Confirmed! Check Email' : 'Confirm Appointment'}
                             </Button>
 
                         </div>
