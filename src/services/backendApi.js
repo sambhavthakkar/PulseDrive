@@ -15,6 +15,7 @@ async function fetchAPI(endpoint, options = {}) {
 
     const defaultHeaders = {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true', // Re-added: Needed for Ngrok
     };
 
     try {
@@ -172,7 +173,7 @@ export function connectToAgentEvents(onMessage, onError = console.error) {
     // Convert http/https to ws/wss
     const wsBase = API_BASE_URL.replace(/^http/, 'ws');
     const wsUrl = `${wsBase}/api/agents/events`;
-    
+
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
