@@ -17,32 +17,38 @@ class SchedulerIntegration:
         pass  # No static initialization
 
     def _generate_local_centers(self):
-        """Generate service centers and slots locally relative to NOW."""
-        now = datetime.now().replace(minute=0, second=0, microsecond=0)
-        return [
-            {
-                "id": "SC001",
-                "name": "Jeep Service Center - North",
-                "slots": [
-                    {
-                        "slot_time": (now + timedelta(hours=i)).isoformat(),
-                        "slot_id": f"SC001-SLOT-{i}"
-                    }
-                    for i in range(1, 48)  # Next 48 hours
-                ]
-            },
-            {
-                "id": "SC002",
-                "name": "Jeep Service Center - South",
-                "slots": [
-                    {
-                        "slot_time": (now + timedelta(hours=i)).isoformat(),
-                        "slot_id": f"SC002-SLOT-{i}"
-                    }
-                    for i in range(2, 48)
-                ]
-            }
+        """Generate service centers and slots for Business Hours (10 AM - 6 PM)."""
+        now = datetime.now()
+        centers = [
+            {"id": "SC001", "name": "Jeep Service Center - North"}
         ]
+        
+        create_centers = []
+        
+        for c in centers:
+            slots = []
+            # Generate slots for Today + Next 2 Days
+            for day_offset in range(3):
+                date_base = now + timedelta(days=day_offset)
+                
+                # Hours: 10:00 to 18:00 (6 PM)
+                for hour in range(10, 19):
+                    slot_dt = date_base.replace(hour=hour, minute=0, second=0, microsecond=0)
+                    
+                    # Only add if in the future
+                    if slot_dt > now:
+                        slots.append({
+                            "slot_time": slot_dt.isoformat(),
+                            "slot_id": f"{c['id']}-{slot_dt.strftime('%d%H')}" # Simple ID
+                        })
+            
+            create_centers.append({
+                "id": c["id"],
+                "name": c["name"],
+                "slots": slots
+            })
+            
+        return create_centers
 
     def get_bookings(self) -> List[Dict]:
         """Fetch existing bookings from MockAPI."""
@@ -91,7 +97,8 @@ class SchedulerIntegration:
                 dt = datetime.fromisoformat(slot["slot_time"])
                 sid = slot["slot_id"]
 
-                if dt >= now_local and (dt - now_local).total_seconds() <= within_hours * 3600:
+                # Generator handles logic, just check it's not taken
+                if dt > now_local:
                     if sid not in taken_slots:
                         candidates.append({
                             "center_id": center["id"],

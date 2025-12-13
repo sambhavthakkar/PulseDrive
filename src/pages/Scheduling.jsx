@@ -142,22 +142,35 @@ export default function Scheduling() {
                                 </div>
                             </motion.div>
 
-                            {/* Slots Grid */}
+                            {/* Slots Grid Grouped by Date */}
                             {loading ? (
                                 <div className="text-center py-10 text-[var(--text-muted)]">Loading available slots...</div>
+                            ) : slots.length === 0 ? (
+                                <div className="text-center py-10 text-[var(--text-muted)]">No slots available for the next 3 days.</div>
                             ) : (
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    {slots.map(slot => (
-                                        <TimeSlotCard
-                                            key={slot.id}
-                                            slot={slot}
-                                            isSelected={selectedSlot === slot.id}
-                                            onSelect={() => setSelectedSlot(slot.id)}
-                                        />
+                                <div className="space-y-6">
+                                    {Object.entries(slots.reduce((acc, slot) => {
+                                        const dateLabel = slot.fullDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+                                        if (!acc[dateLabel]) acc[dateLabel] = [];
+                                        acc[dateLabel].push(slot);
+                                        return acc;
+                                    }, {})).map(([date, daySlots]) => (
+                                        <div key={date}>
+                                            <h5 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3 pl-1 border-l-2 border-[var(--color-primary)] ml-1">
+                                                {date}
+                                            </h5>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                                {daySlots.map(slot => (
+                                                    <TimeSlotCard
+                                                        key={slot.id}
+                                                        slot={slot}
+                                                        isSelected={selectedSlot === slot.id}
+                                                        onSelect={() => setSelectedSlot(slot.id)}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
                                     ))}
-                                    {slots.length === 0 && (
-                                        <div className="col-span-3 text-center py-10 text-[var(--text-muted)]">No slots available for the next 48 hours.</div>
-                                    )}
                                 </div>
                             )}
                         </Card>
