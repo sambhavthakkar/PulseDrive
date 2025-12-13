@@ -5,7 +5,9 @@
  * Replaces mock data with real API calls.
  */
 
-const API_BASE = 'http://localhost:8000/api';
+// Use environment variable for API URL or fallback to localhost
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE = `${API_BASE_URL}/api`;
 
 // Helper for API calls
 async function fetchAPI(endpoint, options = {}) {
@@ -98,6 +100,7 @@ export async function getVehicleBookings(vehicleId) {
 export async function cancelBooking(bookingId) {
     return fetchAPI(`/scheduling/cancel/${bookingId}`, {
         method: 'DELETE',
+        body: JSON.stringify({ reason: 'User requested cancellation' }),
     });
 }
 
@@ -166,7 +169,11 @@ export async function triggerWorkflow(workflowId, vehicleId = null) {
 
 // ============== WebSocket ==============
 export function connectToAgentEvents(onMessage, onError = console.error) {
-    const ws = new WebSocket('ws://localhost:8000/api/agents/events');
+    // Convert http/https to ws/wss
+    const wsBase = API_BASE_URL.replace(/^http/, 'ws');
+    const wsUrl = `${wsBase}/api/agents/events`;
+    
+    const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
         console.log('[WS] Connected to Agent Events');
@@ -199,7 +206,7 @@ export function connectToAgentEvents(onMessage, onError = console.error) {
 // ============== Health Check ==============
 export async function checkBackendHealth() {
     try {
-        const response = await fetch('http://localhost:8000/health');
+        const response = await fetch(`${API_BASE_URL}/health`);
         return response.ok;
     } catch {
         return false;
