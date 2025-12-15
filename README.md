@@ -5,7 +5,7 @@ Pulse Drive is an agent-driven predictive maintenance platform designed for mode
 
 The platform demonstrates how Agentic AI can transform reactive aftersales systems into autonomous, intelligent vehicle health management workflows, improving uptime, safety, customer experience, and manufacturing quality.
 
-## 🎯 Why Pulse Drive Matters
+## Why Pulse Drive Matters
 
 India records lakhs of road accidents annually, many aggravated by poor vehicle health monitoring and delayed maintenance. Today’s automotive systems remain largely reactive — problems are detected only after failure.
 
@@ -16,7 +16,7 @@ Pulse Drive shifts this paradigm by:
 *   Closing the loop between aftersales and manufacturing teams
 *   Enabling safer, smarter, and more reliable vehicles
 
-## 🧠 Core Concept: Agentic AI Architecture
+## Core Concept: Agentic AI Architecture
 
 Pulse Drive is built around a **Master Orchestrator Agent** that coordinates multiple specialized AI agents to autonomously execute end-to-end maintenance workflows.
 
@@ -33,7 +33,7 @@ Each agent has a clearly defined role and communicates via APIs and real-time ev
 *   **Feedback Agent** – Captures post-service feedback and satisfaction
 *   **Manufacturing Insights Agent** – Feeds RCA/CAPA insights back to OEM teams
 
-## 🚀 Key Features
+## Key Features
 
 *   **Real-time Vehicle Dashboard**: Live visualization of vehicle health, battery, mileage, and critical signals.
 *   **Predictive Diagnostics**: AI models detect early warning patterns and estimate failure probabilities.
@@ -44,7 +44,7 @@ Each agent has a clearly defined role and communicates via APIs and real-time ev
 *   **Manufacturing Feedback Loop**: Aggregated failure insights help reduce recurring defects and improve product quality.
 *   **Dark / Light Theme Responsive UI**: Modern, production-style interface optimized for different screen sizes.
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Frontend
 
@@ -61,7 +61,7 @@ Each agent has a clearly defined role and communicates via APIs and real-time ev
 *   **Pandas** – Telemetry analysis and aggregation
 *   **ElevenLabs** – Voice synthesis integration (backend-ready)
 
-## 🔄 End-to-End Workflow (Demo Flow)
+## End-to-End Workflow (Demo Flow)
 
 1.  Vehicle telemetry is ingested in real time
 2.  AI detects anomalies and predicts failures
@@ -71,7 +71,7 @@ Each agent has a clearly defined role and communicates via APIs and real-time ev
 6.  UEBA monitors agent actions for security
 7.  Feedback and RCA insights loop back to manufacturing
 
-## 📦 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -132,7 +132,7 @@ Pulse Drive/
 *   Designed for scalable OEM deployment, not just a prototype UI
 *   Architecture supports easy extension to real vehicle telematics APIs
 
-## 🏁 Hackathon Value Proposition
+## Hackathon Value Proposition
 
 Pulse Drive demonstrates:
 
